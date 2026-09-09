@@ -17,13 +17,8 @@ export function EcoRankHeader({
         <EcoLogo compact />
 
         <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">
-            {title}
-          </h1>
-
-          <p className="mt-1 text-sm text-zinc-400">
-            {subtitle}
-          </p>
+          <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
+          <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>
         </div>
       </div>
     </div>
