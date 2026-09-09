@@ -417,3 +417,124 @@ export function Header() {
                 ×
               </button>
             </div>
+            <nav className="p-3">
+              <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                Menu
+              </p>
+
+              <div className="space-y-1">
+                {mobileMenuItems.map(([label, to, icon]) => {
+                  const isDisabled = label === "Eventos" || label === "Recompensas";
+
+                  if (isDisabled) {
+                    return (
+                      <div
+                        key={label}
+                        className="flex cursor-not-allowed items-center gap-4 rounded-xl px-3 py-3 text-sm text-zinc-600"
+                      >
+                        <Icon name={icon} size={19} />
+                        <span className="flex-1">{label}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-zinc-700">
+                          Em breve
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <NavLink
+                      key={label}
+                      to={to}
+                      onClick={() => setMenuOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center gap-4 rounded-xl px-3 py-3 text-sm transition ${
+                          isActive
+                            ? label === "EcoRank" || label === "Desafios"
+                              ? "bg-lime-400/10 text-lime-400"
+                              : "bg-white/[.06] text-white"
+                            : "text-zinc-300 hover:bg-white/[.04] hover:text-white"
+                        }`
+                      }
+                    >
+                      <Icon name={icon} size={19} />
+                      <span>{label}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </nav>
+
+            <div className="mx-4 border-t border-white/10" />
+
+            <div className="p-3">
+              <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                Atalhos
+              </p>
+
+              <div className="space-y-1">
+                <NavLink
+                  to="/objetivos"
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-4 rounded-xl px-3 py-3 text-sm transition ${
+                      isActive
+                        ? "bg-white/[.06] text-white"
+                        : "text-zinc-400 hover:bg-white/[.04] hover:text-white"
+                    }`
+                  }
+                >
+                  <Icon name="target" size={19} />
+                  <span>Meus objetivos</span>
+                </NavLink>
+
+                <div className="flex cursor-not-allowed items-center gap-4 rounded-xl px-3 py-3 text-sm text-zinc-600">
+                  <Icon name="gift" size={19} />
+
+                  <span className="flex-1">
+                    Favoritos
+                  </span>
+
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-700">
+                    Em breve
+                  </span>
+                </div>
+
+                <NavLink
+                  to="/configuracoes"
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-4 rounded-xl px-3 py-3 text-sm transition ${
+                      isActive
+                        ? "bg-white/[.06] text-white"
+                        : "text-zinc-400 hover:bg-white/[.04] hover:text-white"
+                    }`
+                  }
+                >
+                  <Icon name="settings" size={19} />
+                  <span>Configurações</span>
+                </NavLink>
+              </div>
+            </div>
+
+            <div className="m-4 rounded-2xl border border-purple-500/20 bg-purple-950/20 p-4">
+              <p className="font-semibold text-white">
+                Convide amigos
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-zinc-400">
+                Compartilhe a SoulUp e incentive seus amigos a participarem.
+              </p>
+
+              <button
+                type="button"
+                className="mt-4 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-500"
+              >
+                Convidar
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+    </>
+  );
+}
