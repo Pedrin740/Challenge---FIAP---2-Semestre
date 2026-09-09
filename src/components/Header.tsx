@@ -273,3 +273,147 @@ export function Header() {
       window.open(result.url, "_blank", "noopener,noreferrer");
     }
   }
+  return (
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 h-[68px] border-b border-white/10 bg-[#0a0a0c]/95 backdrop-blur-xl">
+        <div className="flex h-full items-center justify-between px-4 sm:px-6 lg:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Abrir menu"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-zinc-300 transition hover:bg-white/[.05] hover:text-white lg:hidden"
+            >
+              <span className="text-2xl leading-none">☰</span>
+            </button>
+
+            <NavLink to="/" className="text-2xl font-bold text-purple-500">
+              SoulUp
+            </NavLink>
+          </div>
+
+          <div className="hidden flex-1 justify-center lg:flex">
+            <div className="relative w-full max-w-[435px]">
+              <Icon name="search" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+
+              <input
+                type="text"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setSearchOpen(true);
+                }}
+                onFocus={() => {
+                  if (search.trim()) {
+                    setSearchOpen(true);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSearchSubmit();
+                  }
+
+                  if (event.key === "Escape") {
+                    setSearchOpen(false);
+                  }
+                }}
+                placeholder="Buscar no SoulUp..."
+                className="w-full rounded-full border border-white/10 bg-[#151517] py-2.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-purple-500/40"
+              />
+
+              {searchOpen && search.trim() && (
+                <div className="absolute left-0 right-0 top-[calc(100%+8px)] overflow-hidden rounded-2xl border border-white/10 bg-[#121214] shadow-2xl">
+                  {searchResults.length > 0 ? (
+                    <div className="max-h-[440px] overflow-y-auto p-2">
+                      {searchResults.map((result, index) => (
+                        <button
+                          key={`${result.type}-${result.title}-${index}`}
+                          type="button"
+                          onClick={() => handleSearchResult(result)}
+                          className="flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-white/[.05]"
+                        >
+                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[.04] text-zinc-400">
+                            <Icon name={result.icon} size={17} />
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-zinc-200">
+                              {result.title}
+                            </p>
+
+                            <p className="mt-1 truncate text-xs text-zinc-500">
+                              {result.description}
+                            </p>
+                          </div>
+
+                          <span className="shrink-0 pt-1 text-[10px] uppercase tracking-wider text-zinc-600">
+                            {result.type}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center">
+                      <Icon name="search" size={22} className="mx-auto text-zinc-600" />
+
+                      <p className="mt-3 text-sm font-semibold text-zinc-400">
+                        Nenhum resultado encontrado
+                      </p>
+
+                      <p className="mt-1 text-xs text-zinc-600">
+                        Tente buscar por outra palavra.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              aria-label="Notificações"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-zinc-300 transition hover:bg-white/[.05] hover:text-white"
+            >
+              <Icon name="bell" size={20} />
+            </button>
+
+            <AccountMenu />
+          </div>
+        </div>
+      </header>
+
+      {searchOpen && search.trim() && (
+        <button
+          type="button"
+          aria-label="Fechar resultados da pesquisa"
+          onClick={() => setSearchOpen(false)}
+          className="fixed inset-0 z-40 hidden lg:block"
+        />
+      )}
+
+      {menuOpen && (
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <button
+            type="button"
+            aria-label="Fechar menu"
+            onClick={() => setMenuOpen(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+
+          <aside className="relative h-full w-[310px] max-w-[85vw] overflow-y-auto border-r border-white/10 bg-[#0a0a0c] shadow-2xl">
+            <div className="flex h-[68px] items-center justify-between border-b border-white/10 px-5">
+              <NavLink to="/" className="text-2xl font-bold text-purple-500">
+                SoulUp
+              </NavLink>
+
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Fechar menu"
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-3xl leading-none text-zinc-400 transition hover:bg-white/[.05] hover:text-white"
+              >
+                ×
+              </button>
+            </div>
