@@ -65,6 +65,33 @@ type AuthContextData = {
   getRanking: () => AuthUser[];
 };
 
+const initialUsers: AuthUser[] = [
+  {
+    id: 1,
+    name: "João Silva",
+    email: "joao@email.com",
+    password: "123456",
+    ecoRank: {
+      points: 1250,
+      actions: 32,
+      rank: "Ouro",
+      ranking: "Top 10%",
+      nextRank: "Diamante",
+      nextRankPoints: 2000,
+      co2: "125 kg",
+      categories: [
+        { label: "Reciclagem", value: 40 },
+        { label: "Energia", value: 25 },
+        { label: "Transporte", value: 20 },
+        { label: "Água", value: 15 },
+      ],
+      challengeProgress: {},
+    },
+    goals: [],
+    actionHistory: [],
+  },
+];
+
 const AuthContext =
   createContext<AuthContextData | undefined>(
     undefined,
