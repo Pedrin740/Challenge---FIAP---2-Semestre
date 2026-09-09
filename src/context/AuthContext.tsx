@@ -66,31 +66,26 @@ type AuthContextData = {
 };
 
 const initialUsers: AuthUser[] = [
-  {
-    id: 1,
-    name: "João Silva",
-    email: "joao@email.com",
-    password: "123456",
-    ecoRank: {
-      points: 1250,
-      actions: 32,
-      rank: "Ouro",
-      ranking: "Top 10%",
-      nextRank: "Diamante",
-      nextRankPoints: 2000,
-      co2: "125 kg",
-      categories: [
-        { label: "Reciclagem", value: 40 },
-        { label: "Energia", value: 25 },
-        { label: "Transporte", value: 20 },
-        { label: "Água", value: 15 },
-      ],
-      challengeProgress: {},
-    },
-    goals: [],
-    actionHistory: [],
-  },
+    
 ];
+
+const USERS_STORAGE_KEY = "soulup_users";
+const AUTH_STORAGE_KEY = "soulup_auth";
+
+function loadUsers(): AuthUser[] {
+  const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
+
+  if (storedUsers) {
+    try {
+      return JSON.parse(storedUsers);
+    } catch {
+      return initialUsers;
+    }
+  }
+
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
+  return initialUsers;
+}
 
 const AuthContext =
   createContext<AuthContextData | undefined>(
