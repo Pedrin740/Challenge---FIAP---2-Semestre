@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+
 import { Icon } from "./Icons";
 
 export function BottomNav() {
@@ -18,8 +19,79 @@ export function BottomNav() {
             : "text-zinc-500 hover:text-white"
         }`}
       >
-        <Icon name="home" size={18} />
-        <span>Início</span>
+        <Icon
+          name="home"
+          size={18}
+        />
+
+        <span>
+          Início
+        </span>
+      </Link>
+
+      <Link
+        to="/ecorank"
+        className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${
+          isActive("/ecorank")
+            ? "text-lime-400"
+            : "text-zinc-500 hover:text-white"
+        }`}
+      >
+        <Icon
+          name="leaf"
+          size={18}
+        />
+
+        <span>
+          EcoRank
+        </span>
+      </Link>
+
+      <Link
+        to="/ecorank/enviar"
+        aria-label="Enviar ação"
+        className="mx-auto -mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-lime-400 text-zinc-950 shadow-[0_0_28px_rgba(163,230,53,0.18)] transition hover:bg-lime-300"
+      >
+        <Icon
+          name="plus"
+          size={27}
+        />
+      </Link>
+
+      <Link
+        to="/ecorank/desafios"
+        className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${
+          isActive("/ecorank/desafios")
+            ? "text-lime-400"
+            : "text-zinc-500 hover:text-white"
+        }`}
+      >
+        <Icon
+          name="target"
+          size={18}
+        />
+
+        <span>
+          Desafios
+        </span>
+      </Link>
+
+      <Link
+        to="/perfil"
+        className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${
+          isActive("/perfil")
+            ? "text-purple-400"
+            : "text-zinc-500 hover:text-white"
+        }`}
+      >
+        <Icon
+          name="userSingle"
+          size={18}
+        />
+
+        <span>
+          Perfil
+        </span>
       </Link>
     </nav>
   );
