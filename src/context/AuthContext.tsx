@@ -113,6 +113,83 @@ function loadAuthenticatedUser(
   }
 }
 
+function getRankInfo(points: number) {
+  if (points >= 7000) {
+    return {
+      rank: "Esmeralda" as Rank,
+      nextRank: "Esmeralda" as Rank,
+      nextRankPoints: 7000,
+    };
+  }
+
+  if (points >= 4000) {
+    return {
+      rank: "Diamante" as Rank,
+      nextRank: "Esmeralda" as Rank,
+      nextRankPoints: 7000,
+    };
+  }
+
+  if (points >= 2000) {
+    return {
+      rank: "Ouro" as Rank,
+      nextRank: "Diamante" as Rank,
+      nextRankPoints: 4000,
+    };
+  }
+
+  if (points >= 1000) {
+    return {
+      rank: "Prata" as Rank,
+      nextRank: "Ouro" as Rank,
+      nextRankPoints: 2000,
+    };
+  }
+
+  return {
+    rank: "Bronze" as Rank,
+    nextRank: "Prata" as Rank,
+    nextRankPoints: 1000,
+  };
+}
+
+function updateCategoryPercentages(
+  categories: EcoRankData["categories"],
+  category: string,
+) {
+  const updatedCategories = categories.map((item) => ({
+    ...item,
+  }));
+
+  const selectedCategory = updatedCategories.find(
+    (item) =>
+      item.label.toLowerCase() ===
+      category.toLowerCase(),
+  );
+
+  if (!selectedCategory) {
+    return updatedCategories;
+  }
+
+  selectedCategory.value += 10;
+
+  const total = updatedCategories.reduce(
+    (sum, item) => sum + item.value,
+    0,
+  );
+
+  if (total === 0) {
+    return updatedCategories;
+  }
+
+  return updatedCategories.map((item) => ({
+    ...item,
+    value: Math.round(
+      (item.value / total) * 100,
+    ),
+  }));
+}
+
 const AuthContext =
   createContext<AuthContextData | undefined>(
     undefined,
@@ -233,17 +310,93 @@ export function AuthProvider({
     localStorage.removeItem(AUTH_STORAGE_KEY);
   }
 
+  function addAction(
+    points: number,
+    category: string,
+  ) {
+    if (!user) {
+      return;
+    }
+
+    const updatedUsers = users.map(
+      (currentUser) => {
+        if (currentUser.id !== user.id) {
+          return currentUser;
+        }
+
+        const newPoints =
+          currentUser.ecoRank.points + points;
+
+        const rankInfo =
+          getRankInfo(newPoints);
+
+        const newAction: UserAction = {
+          id: Date.now(),
+          points,
+          category,
+          date: new Date().toISOString(),
+        };
+
+        return {
+          ...currentUser,
+          ecoRank: {
+            ...currentUser.ecoRank,
+            points: newPoints,
+            actions:
+              currentUser.ecoRank.actions + 1,
+            rank: rankInfo.rank,
+            nextRank: rankInfo.nextRank,
+            nextRankPoints:
+              rankInfo.nextRankPoints,
+            categories:
+              updateCategoryPercentages(
+                currentUser.ecoRank.categories,
+                category,
+              ),
+          },
+          actionHistory: [
+            ...(currentUser.actionHistory ?? []),
+            newAction,
+          ],
+        };
+      },
+    );
+
+    const updatedUser =
+      updatedUsers.find(
+        (currentUser) =>
+          currentUser.id === user.id,
+      );
+
+    setUsers(updatedUsers);
+    setUser(updatedUser ?? null);
+
+    localStorage.setItem(
+      USERS_STORAGE_KEY,
+      JSON.stringify(updatedUsers),
+    );
+  }
+
+  function getRanking(): AuthUser[] {
+    return [...users].sort(
+      (a, b) =>
+        b.ecoRank.points -
+        a.ecoRank.points,
+    );
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
         users,
-        isAuthenticated: user !== null,
+        isAuthenticated:
+          user !== null,
         login,
         register,
         logout,
-        addAction: () => {},
-        getRanking: () => users,
+        addAction,
+        getRanking,
       }}
     >
       {children}
