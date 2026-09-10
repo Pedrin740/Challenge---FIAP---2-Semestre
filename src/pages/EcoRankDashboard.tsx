@@ -83,6 +83,35 @@ export function EcoRankDashboard() {
 
                 <ChallengeCard />
             </div>
+
+            <div className="mt-4 grid gap-4 xl:grid-cols-[1.25fr_.9fr_.9fr]">
+                <ImpactChart />
+
+                <CategoryChart />
+
+                <RankingCard />
+            </div>
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                <QuickActions />
+
+                <section className="rounded-2xl border border-white/10 bg-[#121214] p-5">
+                    <h2 className="font-semibold">
+                        Registrar nova ação
+                    </h2>
+
+                    <p className="mt-2 text-sm leading-6 text-zinc-400">
+                        Mostre uma ação sustentável realizada por você e participe da evolução do EcoRank.
+                    </p>
+
+                    <a
+                        href="/ecorank/enviar"
+                        className="mt-5 inline-flex rounded-lg bg-purple-600 px-5 py-2.5 text-sm font-bold transition hover:bg-purple-500"
+                    >
+                        Enviar ação
+                    </a>
+                </section>
+            </div>
         </div>
     );
 }
