@@ -125,3 +125,133 @@ export function Ranking() {
                         </table>
                     </div>
                 </section>
+                <aside className="rounded-2xl border border-white/10 bg-[#121214] p-5">
+                    <p className="text-sm text-zinc-500">
+                        Sua posição
+                    </p>
+
+                    <p className="mt-2 text-4xl font-bold text-lime-400">
+                        {currentPosition}º
+                    </p>
+
+                    <p className="mt-2 text-sm text-zinc-400">
+                        {user.ecoRank.points.toLocaleString("pt-BR")} pontos
+                    </p>
+
+                    <div className="mt-5 rounded-xl border border-white/5 bg-white/[.02] p-4">
+                        <p className="text-xs text-zinc-500">
+                            Seu ranque
+                        </p>
+
+                        <p className="mt-1 text-lg font-bold">
+                            {user.ecoRank.rank}
+                        </p>
+
+                        {user.ecoRank.nextRank !== user.ecoRank.rank && (
+                            <>
+                                <p className="mt-3 text-xs text-zinc-500">
+                                    Próximo ranque
+                                </p>
+
+                                <p className="mt-1 font-semibold text-lime-400">
+                                    {user.ecoRank.nextRank}
+                                </p>
+
+                                <p className="mt-1 text-xs text-zinc-500">
+                                    {user.ecoRank.nextRankPoints.toLocaleString(
+                                        "pt-BR",
+                                    )}{" "}
+                                    pontos
+                                </p>
+                            </>
+                        )}
+                    </div>
+                </aside>
+            </div>
+
+            <section className="mt-4 rounded-2xl border border-white/10 bg-[#121214] p-5">
+                <div className="mb-4">
+                    <h2 className="font-semibold">
+                        Ranking geral
+                    </h2>
+
+                    <p className="mt-1 text-xs text-zinc-500">
+                        Confira a pontuação e o ranque de todos os usuários.
+                    </p>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-white/10">
+                    <table className="w-full min-w-[650px] border-collapse text-sm">
+                        <thead>
+                            <tr className="border-b border-white/10 bg-white/[.02]">
+                                <th className="w-16 px-4 py-3 text-center font-semibold">
+                                    #
+                                </th>
+
+                                <th className="px-4 py-3 text-left font-semibold">
+                                    Usuário
+                                </th>
+
+                                <th className="px-4 py-3 text-left font-semibold">
+                                    Ranque
+                                </th>
+
+                                <th className="px-4 py-3 text-right font-semibold">
+                                    Pontos
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {ranking.map((item, index) => {
+                                const isCurrentUser =
+                                    item.id === user.id;
+
+                                return (
+                                    <tr
+                                        key={item.id}
+                                        className={`border-b border-white/5 last:border-b-0 ${isCurrentUser
+                                                ? "bg-lime-400/[.07]"
+                                                : ""
+                                            }`}
+                                    >
+                                        <td className="px-4 py-4 text-center font-semibold text-zinc-500">
+                                            {index + 1}
+                                        </td>
+
+                                        <td className="px-4 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 font-bold">
+                                                    {item.name.charAt(0)}
+                                                </div>
+
+                                                <div>
+                                                    <p className="font-semibold">
+                                                        {item.name}
+                                                    </p>
+
+                                                    {isCurrentUser && (
+                                                        <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-lime-400">
+                                                            Você
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td className="px-4 py-4">
+                                            <span
+                                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.ecoRank.rank === "Bronze"
+                                                        ? "bg-amber-600/10 text-amber-500"
+                                                        : item.ecoRank.rank === "Prata"
+                                                            ? "bg-zinc-300/10 text-zinc-300"
+                                                            : item.ecoRank.rank === "Ouro"
+                                                                ? "bg-yellow-400/10 text-yellow-400"
+                                                                : item.ecoRank.rank === "Diamante"
+                                                                    ? "bg-cyan-400/10 text-cyan-400"
+                                                                    : "bg-emerald-400/10 text-emerald-400"
+                                                    }`}
+                                            >
+                                                {item.ecoRank.rank}
+                                            </span>
+                                        </td>
