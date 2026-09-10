@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Leaf } from 'lucide-react';
 
 export interface ActionForm {
@@ -9,16 +10,35 @@ export interface ActionForm {
 }
 
 export const SubmitAction: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<ActionForm>({
     title: '',
     category: 'reciclagem',
     description: '',
     estimatedImpact: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!formData.title || !formData.description) {
+      setError('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      navigate('/impact');
+    }, 1000);
   };
 
   return (
@@ -34,7 +54,7 @@ export const SubmitAction: React.FC = () => {
           </div>
         </div>
 
-        <form className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Título da Ação *</label>
             <input
@@ -85,6 +105,14 @@ export const SubmitAction: React.FC = () => {
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800 resize-none"
             />
           </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-lg"
+          >
+            {isSubmitting ? 'Enviando...' : 'Submeter Ação'}
+          </button>
         </form>
       </div>
     </div>
