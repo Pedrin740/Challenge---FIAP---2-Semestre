@@ -14,7 +14,7 @@ type CadastroFormData = {
   confirmPassword: string;
 };
 
-export default function Cadastro() {
+export function Cadastro() {
   const navigate = useNavigate();
   const { register: registerUser } = useAuth();
 

@@ -2,7 +2,7 @@ import { Link, Navigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
-export default function Perfil() {
+export function Perfil() {
   const { user, logout } = useAuth();
 
   if (!user) {

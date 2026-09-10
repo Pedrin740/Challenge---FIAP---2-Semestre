@@ -13,7 +13,7 @@ type LoginFormData = {
   password: string;
 };
 
-export default function Login() {
+export function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();

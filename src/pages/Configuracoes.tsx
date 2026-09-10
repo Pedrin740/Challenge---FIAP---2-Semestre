@@ -2,7 +2,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme, type Theme } from "../context/ThemeContext";
 
-export default function Configuracoes() {
+export function Configuracoes() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
