@@ -56,3 +56,15 @@ export function Sobre() {
           </ol>
         </article>
       </section>
+
+       <section className="mt-6 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8">
+        <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">Diferenciais</p>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {["Gamificação com níveis", "Validação por evidência", "Ranking entre usuários", "Desafios e recompensas", "Foco em impacto real"].map((item) => (
+            <div key={item} className="rounded-2xl border border-white/10 bg-white/[.03] p-5">
+              <div className="text-xl text-lime-400">✓</div>
+              <p className="mt-3 text-sm font-semibold">{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
