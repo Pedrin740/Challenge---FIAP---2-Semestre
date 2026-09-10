@@ -69,6 +69,13 @@ export function ChallengeCard() {
                         Participar
                     </Link>
                 </div>
+
+                <div className="hidden h-24 w-24 items-center justify-center rounded-full bg-lime-400/10 text-lime-400 sm:flex">
+                    <Icon
+                        name="leaf"
+                        size={50}
+                    />
+                </div>
             </div>
         </section>
     );
