@@ -4,7 +4,7 @@ import { useTheme, type Theme } from "../context/ThemeContext";
 
 export default function Configuracoes() {
   const { user, logout } = useAuth();
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
   if (!user) {
@@ -16,6 +16,28 @@ export default function Configuracoes() {
     medium: "Médio",
     dark: "Escuro",
   };
+
+  const themes: {
+    value: Theme;
+    title: string;
+    description: string;
+  }[] = [
+    {
+      value: "light",
+      title: "Claro",
+      description: "Tema claro",
+    },
+    {
+      value: "medium",
+      title: "Médio",
+      description: "Tema intermediário",
+    },
+    {
+      value: "dark",
+      title: "Escuro",
+      description: "Tema escuro",
+    },
+  ];
 
   function handleLogout() {
     logout();
@@ -49,20 +71,24 @@ export default function Configuracoes() {
         <h2>Aparência</h2>
 
         <div className="theme-options">
-          <button type="button" className="theme-card">
-            <strong>Claro</strong>
-            <span>Tema claro</span>
-          </button>
+          {themes.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              className={`theme-card ${
+                theme === item.value ? "selected" : ""
+              }`}
+              onClick={() => setTheme(item.value)}
+              aria-pressed={theme === item.value}
+            >
+              <strong>{item.title}</strong>
+              <span>{item.description}</span>
 
-          <button type="button" className="theme-card">
-            <strong>Médio</strong>
-            <span>Tema intermediário</span>
-          </button>
-
-          <button type="button" className="theme-card">
-            <strong>Escuro</strong>
-            <span>Tema escuro</span>
-          </button>
+              {theme === item.value && (
+                <small>Tema selecionado</small>
+              )}
+            </button>
+          ))}
         </div>
 
         <p>
