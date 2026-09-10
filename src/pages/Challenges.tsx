@@ -74,3 +74,17 @@ export function Challenges() {
                                     }}
                                 />
                             </div>
+
+                            <Link
+                                to="/ecorank/enviar"
+                                className="mt-5 inline-flex rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-bold transition hover:bg-purple-500"
+                            >
+                                Participar
+                            </Link>
+                        </section>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
