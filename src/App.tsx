@@ -9,7 +9,7 @@ import { Contato } from "./pages/Contato";
 import { Cadastro } from "./pages/Cadastro";
 import { EcoRankDashboard } from "./pages/EcoRankDashboard";
 import { FAQ } from "./pages/FAQ";
-import { Home } from "./pages/Home";
+import { Home } from "./pages/Home;
 import { Impact } from "./pages/Impact";
 import { Integrantes } from "./pages/Integrantes";
 import { Login } from "./pages/Login";
