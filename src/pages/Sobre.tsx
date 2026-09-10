@@ -57,7 +57,7 @@ export function Sobre() {
         </article>
       </section>
 
-       <section className="mt-6 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8">
+      <section className="mt-6 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8">
         <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">Diferenciais</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {["Gamificação com níveis", "Validação por evidência", "Ranking entre usuários", "Desafios e recompensas", "Foco em impacto real"].map((item) => (
@@ -69,7 +69,7 @@ export function Sobre() {
         </div>
       </section>
 
-            <section className="mt-6 grid gap-8 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8 lg:grid-cols-2 lg:items-center">
+      <section className="mt-6 grid gap-8 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8 lg:grid-cols-2 lg:items-center">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">Tecnologias utilizadas</p>
           <h2 className="mt-2 text-2xl font-bold sm:text-3xl">Frontend moderno e preparado para evolução</h2>

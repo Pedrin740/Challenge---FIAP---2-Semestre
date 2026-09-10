@@ -156,7 +156,7 @@ export const environmentalNews: EnvironmentalNews[] = [
     url: "https://agenciabrasil.ebc.com.br/meio-ambiente/noticia/2026-08/imazon-aponta-desmatamento-zero-em-60-de-terras-indigenas-na-amazonia",
   },
 
-    // ============================
+  // ============================
   // RECICLAGEM
   // ============================
 
@@ -212,5 +212,5 @@ export const environmentalNews: EnvironmentalNews[] = [
     source: "Agência Brasil",
     date: "30/08/2026",
     url: "https://agenciabrasil.ebc.com.br/meio-ambiente",
-  },
+},
 ];

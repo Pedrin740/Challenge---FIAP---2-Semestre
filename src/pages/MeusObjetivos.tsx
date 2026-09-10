@@ -1,109 +1,61 @@
-import React, { useState } from 'react';
-import { CheckCircle, Plus } from 'lucide-react';
+import { Navigate } from "react-router-dom";
 
-interface Goal {
-  id: number;
-  title: string;
-  category: string;
-  progress: number;
-  target: string;
-  completed: boolean;
-}
+import { useAuth } from "../context/AuthContext";
 
-export const MeusObjetivos: React.FC = () => {
-  const [goals, setGoals] = useState<Goal[]>([
-    {
-      id: 1,
-      title: 'Pedalar 50 km para o trabalho',
-      category: 'Mobilidade',
-      progress: 75,
-      target: '50 km',
-      completed: false,
-    },
-    {
-      id: 2,
-      title: 'Compostar resíduos por 30 dias',
-      category: 'Resíduos',
-      progress: 100,
-      target: '30 dias',
-      completed: true,
-    },
-    {
-      id: 3,
-      title: 'Substituir lâmpadas residenciais por LED',
-      category: 'Energia',
-      progress: 40,
-      target: '10 lâmpadas',
-      completed: false,
-    },
-  ]);
+export function MeusObjetivos() {
+  const { user } = useAuth();
 
-  const toggleGoal = (id: number) => {
-    setGoals((prev) =>
-      prev.map((g) => (g.id === id ? { ...g, completed: !g.completed } : g))
-    );
-  };
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Meus Objetivos</h1>
-          <p className="text-sm text-gray-500">Acompanhe e cumpra suas metas ecológicas</p>
-        </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors">
-          <Plus className="w-4 h-4" />
-          <span>Nova Meta</span>
-        </button>
+    <div className="mx-auto max-w-[1000px] p-4 pb-24 sm:p-6 lg:p-8">
+      <div>
+        <p className="text-sm text-zinc-500">SoulUp</p>
+
+        <h1 className="mt-1 text-3xl font-bold">Meus objetivos</h1>
+
+        <p className="mt-2 text-sm leading-6 text-zinc-400">
+          Acompanhe seus objetivos pessoais dentro da SoulUp.
+        </p>
       </div>
 
-      <div className="space-y-4">
-        {goals.map((goal) => (
-          <div
-            key={goal.id}
-            className={`p-5 rounded-xl border bg-white shadow-sm transition-all ${
-              goal.completed ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-100'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-start space-x-3">
-                <button
-                  onClick={() => toggleGoal(goal.id)}
-                  className={`mt-1 text-gray-300 hover:text-emerald-500 transition-colors ${
-                    goal.completed ? 'text-emerald-500' : ''
-                  }`}
-                >
-                  <CheckCircle className="w-5 h-5" />
-                </button>
-                <div>
-                  <h3
-                    className={`font-semibold text-gray-800 ${
-                      goal.completed ? 'line-through text-gray-400' : ''
-                    }`}
-                  >
-                    {goal.title}
-                  </h3>
-                  <span className="inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
-                    {goal.category}
-                  </span>
-                </div>
-              </div>
-              <span className="text-xs font-semibold text-gray-500">{goal.target}</span>
-            </div>
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        {user.goals.map((goal) => {
+          const percentage = Math.min(Math.round((goal.progress / goal.target) * 100), 100);
 
-            <div className="w-full bg-gray-100 rounded-full h-2">
-              <div
-                className={`h-2 rounded-full transition-all ${
-                  goal.completed ? 'bg-emerald-500' : 'bg-teal-500'
-                }`}
-                style={{ width: `${goal.progress}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          return (
+            <section key={goal.id} className="rounded-2xl border border-white/10 bg-[#121214] p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-lime-400">Objetivo pessoal</p>
+                  <h2 className="mt-2 text-xl font-bold">{goal.title}</h2>
+                </div>
+
+                <span className="rounded-full bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-300">
+                  Privado
+                </span>
+              </div>
+
+              <p className="mt-3 text-sm leading-6 text-zinc-400">{goal.description}</p>
+
+              <div className="mt-5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-zinc-500">Progresso</span>
+                  <span className="font-semibold text-zinc-300">{goal.progress}/{goal.target}</span>
+                </div>
+
+                <div className="mt-2 h-2 rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-lime-400 transition-all" style={{ width: `${percentage}%` }} />
+                </div>
+
+                <p className="mt-2 text-xs text-zinc-600">{percentage}% concluído</p>
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );
-};
-
-export default MeusObjetivos;
+}

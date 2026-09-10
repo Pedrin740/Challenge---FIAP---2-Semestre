@@ -1,6 +1,9 @@
-import React, {
+import {
   createContext,
   useContext,
+  useEffect,
+  useState,
+  type ReactNode,
 } from "react";
 
 export type Rank =
@@ -55,63 +58,247 @@ type AuthContextData = {
   users: AuthUser[];
   isAuthenticated: boolean;
   login: (email: string, password: string) => boolean;
-  register: (
-    name: string,
-    email: string,
-    password: string,
-  ) => boolean;
+  register: (name: string, email: string, password: string) => boolean;
   logout: () => void;
   addAction: (points: number, category: string) => void;
   getRanking: () => AuthUser[];
 };
 
-const initialUsers: AuthUser[] = [
-
-];
-
 const USERS_STORAGE_KEY = "soulup_users";
 const AUTH_STORAGE_KEY = "soulup_auth";
 
-function loadUsers(): AuthUser[] {
-  const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
+const initialUsers: AuthUser[] = [
+  {
+    id: 1,
+    name: "InovaTech",
+    email: "inovatech@email.com",
+    password: "123456",
+    ecoRank: {
+      points: 1250,
+      actions: 23,
+      rank: "Prata",
+      ranking: "Top 18%",
+      nextRank: "Ouro",
+      nextRankPoints: 2000,
+      co2: "48,7 kg",
+      categories: [
+        { label: "Reciclagem", value: 35 },
+        { label: "Mobilidade", value: 25 },
+        { label: "Economia de água", value: 20 },
+        { label: "Energia limpa", value: 10 },
+        { label: "Outros", value: 10 },
+      ],
+      challengeProgress: {
+        "Reduza, Reutilize, Transforme!": 0,
+        "Semana sem desperdício": 60,
+        "Mobilidade consciente": 35,
+      },
+    },
+    goals: [
+      {
+        id: 1,
+        title: "Reciclar durante o mês",
+        description:
+          "Separar corretamente os resíduos recicláveis.",
+        progress: 3,
+        target: 10,
+      },
+      {
+        id: 2,
+        title: "Usar menos plástico",
+        description:
+          "Evitar produtos descartáveis durante a semana.",
+        progress: 4,
+        target: 7,
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Ana Clara",
+    email: "anaclara@email.com",
+    password: "123456",
+    ecoRank: {
+      points: 2840,
+      actions: 31,
+      rank: "Ouro",
+      ranking: "Top 5%",
+      nextRank: "Diamante",
+      nextRankPoints: 4000,
+      co2: "82,4 kg",
+      categories: [
+        { label: "Reciclagem", value: 30 },
+        { label: "Mobilidade", value: 30 },
+        { label: "Economia de água", value: 15 },
+        { label: "Energia limpa", value: 15 },
+        { label: "Outros", value: 10 },
+      ],
+      challengeProgress: {
+        "Reduza, Reutilize, Transforme!": 100,
+        "Semana sem desperdício": 80,
+        "Mobilidade consciente": 60,
+      },
+    },
+    goals: [
+      {
+        id: 3,
+        title: "Economizar água",
+        description:
+          "Adotar hábitos para reduzir o consumo de água.",
+        progress: 6,
+        target: 10,
+      },
+      {
+        id: 4,
+        title: "Mobilidade sustentável",
+        description:
+          "Escolher meios de transporte menos poluentes.",
+        progress: 5,
+        target: 10,
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "Pedro Henrique",
+    email: "pedrohenrique@email.com",
+    password: "123456",
+    ecoRank: {
+      points: 2310,
+      actions: 28,
+      rank: "Ouro",
+      ranking: "Top 10%",
+      nextRank: "Diamante",
+      nextRankPoints: 4000,
+      co2: "69,2 kg",
+      categories: [
+        { label: "Reciclagem", value: 40 },
+        { label: "Mobilidade", value: 20 },
+        { label: "Economia de água", value: 15 },
+        { label: "Energia limpa", value: 15 },
+        { label: "Outros", value: 10 },
+      ],
+      challengeProgress: {
+        "Reduza, Reutilize, Transforme!": 75,
+        "Semana sem desperdício": 40,
+        "Mobilidade consciente": 90,
+      },
+    },
+    goals: [
+      {
+        id: 5,
+        title: "Reduzir desperdícios",
+        description:
+          "Evitar desperdícios de materiais no dia a dia.",
+        progress: 7,
+        target: 10,
+      },
+      {
+        id: 6,
+        title: "Usar transporte sustentável",
+        description:
+          "Priorizar bicicleta, caminhada ou transporte público.",
+        progress: 6,
+        target: 10,
+      },
+    ],
+  },
+  {
+    id: 4,
+    name: "Mariana Costa",
+    email: "mariana@email.com",
+    password: "123456",
+    ecoRank: {
+      points: 1980,
+      actions: 21,
+      rank: "Prata",
+      ranking: "Top 15%",
+      nextRank: "Ouro",
+      nextRankPoints: 2000,
+      co2: "54,8 kg",
+      categories: [
+        { label: "Reciclagem", value: 30 },
+        { label: "Mobilidade", value: 20 },
+        { label: "Economia de água", value: 25 },
+        { label: "Energia limpa", value: 15 },
+        { label: "Outros", value: 10 },
+      ],
+      challengeProgress: {
+        "Reduza, Reutilize, Transforme!": 50,
+        "Semana sem desperdício": 70,
+        "Mobilidade consciente": 40,
+      },
+    },
+    goals: [
+      {
+        id: 7,
+        title: "Economizar energia",
+        description:
+          "Reduzir o consumo de energia elétrica.",
+        progress: 5,
+        target: 10,
+      },
+      {
+        id: 8,
+        title: "Reduzir o plástico",
+        description:
+          "Diminuir o uso de produtos descartáveis.",
+        progress: 4,
+        target: 10,
+      },
+    ],
+  },
+  {
+    id: 5,
+    name: "João Victor",
+    email: "joao@email.com",
+    password: "123456",
+    ecoRank: {
+      points: 1120,
+      actions: 16,
+      rank: "Prata",
+      ranking: "Top 25%",
+      nextRank: "Ouro",
+      nextRankPoints: 2000,
+      co2: "32,5 kg",
+      categories: [
+        { label: "Reciclagem", value: 25 },
+        { label: "Mobilidade", value: 35 },
+        { label: "Economia de água", value: 15 },
+        { label: "Energia limpa", value: 15 },
+        { label: "Outros", value: 10 },
+      ],
+      challengeProgress: {
+        "Reduza, Reutilize, Transforme!": 25,
+        "Semana sem desperdício": 30,
+        "Mobilidade consciente": 50,
+      },
+    },
+    goals: [
+      {
+        id: 9,
+        title: "Caminhar mais",
+        description:
+          "Substituir pequenos deslocamentos de carro por caminhada.",
+        progress: 4,
+        target: 10,
+      },
+      {
+        id: 10,
+        title: "Reciclar em casa",
+        description:
+          "Separar corretamente materiais recicláveis.",
+        progress: 5,
+        target: 10,
+      },
+    ],
+  },
+];
 
-  if (storedUsers) {
-    try {
-      return JSON.parse(storedUsers);
-    } catch {
-      return initialUsers;
-    }
-  }
-
-  localStorage.setItem(
-    USERS_STORAGE_KEY,
-    JSON.stringify(initialUsers),
+const AuthContext =
+  createContext<AuthContextData | undefined>(
+    undefined,
   );
-
-  return initialUsers;
-}
-
-function loadAuthenticatedUser(
-  users: AuthUser[],
-): AuthUser | null {
-  const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
-
-  if (!storedAuth) {
-    return null;
-  }
-
-  try {
-    const authData = JSON.parse(storedAuth);
-
-    return (
-      users.find(
-        (user) => user.id === authData.userId,
-      ) ?? null
-    );
-  } catch {
-    return null;
-  }
-}
 
 function getRankInfo(points: number) {
   if (points >= 7000) {
@@ -155,81 +342,232 @@ function getRankInfo(points: number) {
 
 function updateCategoryPercentages(
   categories: EcoRankData["categories"],
+  totalActions: number,
   category: string,
-) {
-  const updatedCategories = categories.map((item) => ({
-    ...item,
-  }));
-
-  const selectedCategory = updatedCategories.find(
-    (item) =>
-      item.label.toLowerCase() ===
-      category.toLowerCase(),
-  );
-
-  if (!selectedCategory) {
-    return updatedCategories;
+): EcoRankData["categories"] {
+  if (totalActions <= 0) {
+    return categories.map((item) => ({
+      ...item,
+      value: item.label === category ? 100 : 0,
+    }));
   }
 
-  selectedCategory.value += 10;
+  const updated = categories.map((item) => {
+    const previousCount =
+      (item.value / 100) * totalActions;
 
-  const total = updatedCategories.reduce(
+    const newCount =
+      previousCount +
+      (item.label === category ? 1 : 0);
+
+    return {
+      ...item,
+      value: Math.round(
+        (newCount / (totalActions + 1)) * 100,
+      ),
+    };
+  });
+
+  const totalPercentage = updated.reduce(
     (sum, item) => sum + item.value,
     0,
   );
 
-  if (total === 0) {
-    return updatedCategories;
+  const difference =
+    100 - totalPercentage;
+
+  if (difference !== 0) {
+    const selectedIndex =
+      updated.findIndex(
+        (item) =>
+          item.label === category,
+      );
+
+    if (selectedIndex >= 0) {
+      updated[selectedIndex] = {
+        ...updated[selectedIndex],
+        value:
+          updated[selectedIndex].value +
+          difference,
+      };
+    }
   }
 
-  return updatedCategories.map((item) => ({
-    ...item,
-    value: Math.round(
-      (item.value / total) * 100,
-    ),
-  }));
+  return updated;
 }
 
-const AuthContext =
-  createContext<AuthContextData | undefined>(
-    undefined,
-  );
+function loadUsers(): AuthUser[] {
+  const savedUsers =
+    localStorage.getItem(
+      USERS_STORAGE_KEY,
+    );
+
+  if (!savedUsers) {
+    localStorage.setItem(
+      USERS_STORAGE_KEY,
+      JSON.stringify(initialUsers),
+    );
+
+    return initialUsers;
+  }
+
+  try {
+    const parsedUsers =
+      JSON.parse(savedUsers) as AuthUser[];
+
+    return parsedUsers.map(
+      (savedUser) => ({
+        ...savedUser,
+
+        goals:
+          savedUser.goals ??
+          [
+            {
+              id:
+                savedUser.id * 100 + 1,
+              title:
+                "Começar a reciclar",
+              description:
+                "Separar corretamente os resíduos da sua casa.",
+              progress: 0,
+              target: 10,
+            },
+            {
+              id:
+                savedUser.id * 100 + 2,
+              title:
+                "Reduzir o uso de plástico",
+              description:
+                "Evitar produtos descartáveis no dia a dia.",
+              progress: 0,
+              target: 7,
+            },
+          ],
+
+        actionHistory:
+          savedUser.actionHistory ??
+          [],
+      }),
+    );
+  } catch {
+    localStorage.setItem(
+      USERS_STORAGE_KEY,
+      JSON.stringify(initialUsers),
+    );
+
+    return initialUsers;
+  }
+}
+
+function loadAuthenticatedUser(
+  users: AuthUser[],
+): AuthUser | null {
+  const savedAuth =
+    localStorage.getItem(
+      AUTH_STORAGE_KEY,
+    );
+
+  if (!savedAuth) {
+    return null;
+  }
+
+  try {
+    const authData =
+      JSON.parse(savedAuth) as {
+        userId: number;
+      };
+
+    return (
+      users.find(
+        (item) =>
+          item.id ===
+          authData.userId,
+      ) ?? null
+    );
+  } catch {
+    localStorage.removeItem(
+      AUTH_STORAGE_KEY,
+    );
+
+    return null;
+  }
+}
 
 export function AuthProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [users, setUsers] =
-    React.useState<AuthUser[]>(loadUsers);
+    useState<AuthUser[]>(() =>
+      loadUsers(),
+    );
 
   const [user, setUser] =
-    React.useState<AuthUser | null>(() =>
-      loadAuthenticatedUser(users),
+    useState<AuthUser | null>(() =>
+      loadAuthenticatedUser(
+        users,
+      ),
     );
+
+  useEffect(() => {
+    localStorage.setItem(
+      USERS_STORAGE_KEY,
+      JSON.stringify(users),
+    );
+  }, [users]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({
+          userId: user.id,
+        }),
+      );
+    } else {
+      localStorage.removeItem(
+        AUTH_STORAGE_KEY,
+      );
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    const updatedUser =
+      users.find(
+        (item) =>
+          item.id === user.id,
+      );
+
+    if (updatedUser) {
+      setUser(updatedUser);
+    }
+  }, [users]);
 
   function login(
     email: string,
     password: string,
   ): boolean {
-    const foundUser = users.find(
-      (item) =>
-        item.email === email &&
-        item.password === password,
-    );
+    const normalizedEmail =
+      email.trim().toLowerCase();
+
+    const foundUser =
+      users.find(
+        (item) =>
+          item.email.toLowerCase() ===
+            normalizedEmail &&
+          item.password === password,
+      );
 
     if (!foundUser) {
       return false;
     }
 
     setUser(foundUser);
-
-    localStorage.setItem(
-      AUTH_STORAGE_KEY,
-      JSON.stringify({
-        userId: foundUser.id,
-      }),
-    );
 
     return true;
   }
@@ -239,29 +577,38 @@ export function AuthProvider({
     email: string,
     password: string,
   ): boolean {
-    const emailExists = users.some(
-      (item) =>
-        item.email.toLowerCase() ===
-        email.toLowerCase(),
-    );
+    const normalizedName =
+      name.trim();
 
-    if (emailExists) {
+    const normalizedEmail =
+      email.trim().toLowerCase();
+
+    const emailAlreadyExists =
+      users.some(
+        (item) =>
+          item.email.toLowerCase() ===
+          normalizedEmail,
+      );
+
+    if (emailAlreadyExists) {
       return false;
     }
 
     const newUser: AuthUser = {
       id: Date.now(),
-      name,
-      email,
+      name: normalizedName,
+      email: normalizedEmail,
       password,
+
       ecoRank: {
         points: 0,
         actions: 0,
         rank: "Bronze",
-        ranking: "Novo",
+        ranking: "Novo usuário",
         nextRank: "Prata",
         nextRankPoints: 1000,
         co2: "0 kg",
+
         categories: [
           {
             label: "Reciclagem",
@@ -284,30 +631,48 @@ export function AuthProvider({
             value: 0,
           },
         ],
-        challengeProgress: {},
+
+        challengeProgress: {
+          "Reduza, Reutilize, Transforme!": 0,
+          "Semana sem desperdício": 0,
+          "Mobilidade consciente": 0,
+        },
       },
-      goals: [],
+
+      goals: [
+        {
+          id: Date.now() + 1,
+          title: "Começar a reciclar",
+          description:
+            "Separar corretamente os resíduos da sua casa.",
+          progress: 0,
+          target: 10,
+        },
+        {
+          id: Date.now() + 2,
+          title: "Reduzir o uso de plástico",
+          description:
+            "Evitar produtos descartáveis no dia a dia.",
+          progress: 0,
+          target: 7,
+        },
+      ],
+
       actionHistory: [],
     };
 
-    const updatedUsers = [
-      ...users,
+    setUsers((currentUsers) => [
+      ...currentUsers,
       newUser,
-    ];
+    ]);
 
-    setUsers(updatedUsers);
-
-    localStorage.setItem(
-      USERS_STORAGE_KEY,
-      JSON.stringify(updatedUsers),
-    );
+    setUser(newUser);
 
     return true;
   }
 
   function logout() {
     setUser(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
   }
 
   function addAction(
@@ -318,66 +683,93 @@ export function AuthProvider({
       return;
     }
 
-    const updatedUsers = users.map(
-      (currentUser) => {
-        if (currentUser.id !== user.id) {
-          return currentUser;
-        }
+    setUsers((currentUsers) =>
+      currentUsers.map(
+        (currentUser) => {
+          if (
+            currentUser.id !==
+            user.id
+          ) {
+            return currentUser;
+          }
 
-        const newPoints =
-          currentUser.ecoRank.points + points;
+          const currentActions =
+            currentUser.ecoRank.actions;
 
-        const rankInfo =
-          getRankInfo(newPoints);
+          const newPoints =
+            currentUser.ecoRank.points +
+            points;
 
-        const newAction: UserAction = {
-          id: Date.now(),
-          points,
-          category,
-          date: new Date().toISOString(),
-        };
+          const rankInfo =
+            getRankInfo(newPoints);
 
-        return {
-          ...currentUser,
-          ecoRank: {
-            ...currentUser.ecoRank,
-            points: newPoints,
-            actions:
-              currentUser.ecoRank.actions + 1,
-            rank: rankInfo.rank,
-            nextRank: rankInfo.nextRank,
-            nextRankPoints:
-              rankInfo.nextRankPoints,
-            categories:
-              updateCategoryPercentages(
-                currentUser.ecoRank.categories,
-                category,
-              ),
-          },
-          actionHistory: [
-            ...(currentUser.actionHistory ?? []),
-            newAction,
-          ],
-        };
-      },
-    );
+          const actionHistory =
+            currentUser.actionHistory ??
+            [];
 
-    const updatedUser =
-      updatedUsers.find(
-        (currentUser) =>
-          currentUser.id === user.id,
-      );
+          const newAction: UserAction = {
+            id: Date.now(),
+            points,
+            category,
+            date:
+              new Date().toISOString(),
+          };
 
-    setUsers(updatedUsers);
-    setUser(updatedUser ?? null);
+          const updatedCategories =
+            updateCategoryPercentages(
+              currentUser.ecoRank
+                .categories,
+              currentActions,
+              category,
+            );
 
-    localStorage.setItem(
-      USERS_STORAGE_KEY,
-      JSON.stringify(updatedUsers),
+          return {
+            ...currentUser,
+
+            ecoRank: {
+              ...currentUser.ecoRank,
+
+              points: newPoints,
+
+              actions:
+                currentActions + 1,
+
+              rank: rankInfo.rank,
+
+              nextRank:
+                rankInfo.nextRank,
+
+              nextRankPoints:
+                rankInfo.nextRankPoints,
+
+              ranking:
+                currentUser.ecoRank
+                  .ranking,
+
+              co2:
+                (
+                  parseFloat(
+                    currentUser.ecoRank.co2,
+                  ) +
+                  points / 100
+                ).toFixed(1) +
+                " kg",
+
+              categories:
+                updatedCategories,
+            },
+
+            actionHistory: [
+              ...actionHistory,
+              newAction,
+            ],
+          };
+        },
+      ),
     );
   }
 
-  function getRanking(): AuthUser[] {
+  function getRanking() {
     return [...users].sort(
       (a, b) =>
         b.ecoRank.points -
@@ -391,7 +783,7 @@ export function AuthProvider({
         user,
         users,
         isAuthenticated:
-          user !== null,
+          Boolean(user),
         login,
         register,
         logout,

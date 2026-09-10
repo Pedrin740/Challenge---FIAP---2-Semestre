@@ -18,33 +18,20 @@ type ThemeContextData = {
 const DEFAULT_THEME: Theme = "dark";
 const THEME_STORAGE_KEY = "soulup_theme";
 
-const ThemeContext = createContext<ThemeContextData | undefined>(
-  undefined,
-);
+const ThemeContext = createContext<ThemeContextData | undefined>(undefined);
 
-export function ThemeProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function ThemeProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-
-  const [theme, setThemeState] =
-    useState<Theme>(DEFAULT_THEME);
+  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
 
   useEffect(() => {
     const storageKey = user
       ? `${THEME_STORAGE_KEY}_${user.id}`
       : `${THEME_STORAGE_KEY}_guest`;
 
-    const savedTheme =
-      localStorage.getItem(storageKey);
+    const savedTheme = localStorage.getItem(storageKey);
 
-    if (
-      savedTheme === "light" ||
-      savedTheme === "medium" ||
-      savedTheme === "dark"
-    ) {
+    if (savedTheme === "light" || savedTheme === "medium" || savedTheme === "dark") {
       setThemeState(savedTheme);
     } else {
       setThemeState(DEFAULT_THEME);
@@ -56,10 +43,7 @@ export function ThemeProvider({
       ? `${THEME_STORAGE_KEY}_${user.id}`
       : `${THEME_STORAGE_KEY}_guest`;
 
-    localStorage.setItem(
-      storageKey,
-      theme,
-    );
+    localStorage.setItem(storageKey, theme);
   }, [theme, user]);
 
   function setTheme(newTheme: Theme) {
@@ -67,12 +51,7 @@ export function ThemeProvider({
   }
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        setTheme,
-      }}
-    >
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -82,9 +61,7 @@ export function useTheme() {
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error(
-      "useTheme deve ser utilizado dentro de ThemeProvider.",
-    );
+    throw new Error("useTheme deve ser utilizado dentro de ThemeProvider.");
   }
 
   return context;

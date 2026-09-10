@@ -1,3 +1,5 @@
+// src/pages/Integrantes.tsx
+
 const integrantes = [
   {
     nome: "Pedro Felipe de Castro Rosa",
@@ -58,7 +60,7 @@ export function Integrantes() {
         </p>
       </section>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
         {integrantes.map((integrante, index) => (
           <article
             key={integrante.rm}
@@ -93,7 +95,7 @@ export function Integrantes() {
                 href={integrante.github}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/5"
+                className="rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/[.05]"
               >
                 GitHub
               </a>
@@ -102,7 +104,7 @@ export function Integrantes() {
                 href={integrante.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/5"
+                className="rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/[.05]"
               >
                 LinkedIn
               </a>

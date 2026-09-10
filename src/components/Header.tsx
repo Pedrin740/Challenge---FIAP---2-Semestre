@@ -142,6 +142,7 @@ const pages: SearchResult[] = [
     keywords: ["configuracoes", "configurações", "preferencias", "preferências", "tema", "conta", "senha"],
   },
 ];
+
 function normalizeText(text: string) {
   return text
     .toLowerCase()
@@ -273,6 +274,7 @@ export function Header() {
       window.open(result.url, "_blank", "noopener,noreferrer");
     }
   }
+
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50 h-[68px] border-b border-white/10 bg-[#0a0a0c]/95 backdrop-blur-xl">
@@ -417,6 +419,7 @@ export function Header() {
                 ×
               </button>
             </div>
+
             <nav className="p-3">
               <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-600">
                 Menu
