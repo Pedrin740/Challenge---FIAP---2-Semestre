@@ -83,11 +83,17 @@ function loadUsers(): AuthUser[] {
     }
   }
 
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
+  localStorage.setItem(
+    USERS_STORAGE_KEY,
+    JSON.stringify(initialUsers),
+  );
+
   return initialUsers;
 }
 
-function loadAuthenticatedUser(users: AuthUser[]): AuthUser | null {
+function loadAuthenticatedUser(
+  users: AuthUser[],
+): AuthUser | null {
   const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
 
   if (!storedAuth) {
@@ -97,7 +103,11 @@ function loadAuthenticatedUser(users: AuthUser[]): AuthUser | null {
   try {
     const authData = JSON.parse(storedAuth);
 
-    return users.find((user) => user.id === authData.userId) ?? null;
+    return (
+      users.find(
+        (user) => user.id === authData.userId,
+      ) ?? null
+    );
   } catch {
     return null;
   }
@@ -108,15 +118,27 @@ const AuthContext =
     undefined,
   );
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [users, setUsers] = React.useState<AuthUser[]>(loadUsers);
-  const [user, setUser] = React.useState<AuthUser | null>(() =>
-    loadAuthenticatedUser(users),
-  );
+export function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [users, setUsers] =
+    React.useState<AuthUser[]>(loadUsers);
 
-  function login(email: string, password: string): boolean {
+  const [user, setUser] =
+    React.useState<AuthUser | null>(() =>
+      loadAuthenticatedUser(users),
+    );
+
+  function login(
+    email: string,
+    password: string,
+  ): boolean {
     const foundUser = users.find(
-      (item) => item.email === email && item.password === password,
+      (item) =>
+        item.email === email &&
+        item.password === password,
     );
 
     if (!foundUser) {
@@ -124,12 +146,91 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setUser(foundUser);
+
     localStorage.setItem(
       AUTH_STORAGE_KEY,
-      JSON.stringify({ userId: foundUser.id }),
+      JSON.stringify({
+        userId: foundUser.id,
+      }),
     );
 
     return true;
+  }
+
+  function register(
+    name: string,
+    email: string,
+    password: string,
+  ): boolean {
+    const emailExists = users.some(
+      (item) =>
+        item.email.toLowerCase() ===
+        email.toLowerCase(),
+    );
+
+    if (emailExists) {
+      return false;
+    }
+
+    const newUser: AuthUser = {
+      id: Date.now(),
+      name,
+      email,
+      password,
+      ecoRank: {
+        points: 0,
+        actions: 0,
+        rank: "Bronze",
+        ranking: "Novo",
+        nextRank: "Prata",
+        nextRankPoints: 1000,
+        co2: "0 kg",
+        categories: [
+          {
+            label: "Reciclagem",
+            value: 0,
+          },
+          {
+            label: "Mobilidade",
+            value: 0,
+          },
+          {
+            label: "Economia de água",
+            value: 0,
+          },
+          {
+            label: "Energia limpa",
+            value: 0,
+          },
+          {
+            label: "Outros",
+            value: 0,
+          },
+        ],
+        challengeProgress: {},
+      },
+      goals: [],
+      actionHistory: [],
+    };
+
+    const updatedUsers = [
+      ...users,
+      newUser,
+    ];
+
+    setUsers(updatedUsers);
+
+    localStorage.setItem(
+      USERS_STORAGE_KEY,
+      JSON.stringify(updatedUsers),
+    );
+
+    return true;
+  }
+
+  function logout() {
+    setUser(null);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
   }
 
   return (
@@ -139,8 +240,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         users,
         isAuthenticated: user !== null,
         login,
-        register: () => false,
-        logout: () => {},
+        register,
+        logout,
         addAction: () => {},
         getRanking: () => users,
       }}
