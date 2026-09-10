@@ -22,4 +22,37 @@ export function Sobre() {
         </div>
       </section>
 
-      
+      <section className="mt-6 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8">
+        <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">O problema</p>
+        <h2 className="mt-2 text-2xl font-bold sm:text-3xl">Transformar intenção em hábito</h2>
+        <p className="mt-4 max-w-4xl leading-7 text-zinc-400">
+          Muitas pessoas sabem da importância da sustentabilidade, mas não encontram incentivo ou motivação suficientes para aplicar essas práticas no cotidiano. O EcoRank busca transformar conscientização em participação contínua, reconhecendo atitudes sustentáveis e tornando a experiência mais motivadora.
+        </p>
+      </section>
+
+      <section className="mt-6 grid gap-6 lg:grid-cols-2">
+        <article className="rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">Nossa solução</p>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">Ação, validação e evolução</h2>
+          <p className="mt-4 leading-7 text-zinc-400">
+            O usuário realiza uma ação sustentável e envia uma evidência, como foto ou vídeo. A proposta prevê validação automática com inteligência artificial e, após a aprovação, a ação gera pontos para sua evolução dentro do EcoRank.
+          </p>
+        </article>
+        <article className="rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8">
+          <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">Como funciona</p>
+          <ol className="mt-5 grid gap-4 text-sm text-zinc-300">
+            {[
+              "O usuário realiza uma ação sustentável.",
+              "Registra e envia uma evidência pela plataforma.",
+              "O sistema valida a ação.",
+              "A ação aprovada gera pontos.",
+              "O usuário evolui no ranking, do Bronze ao Esmeralda.",
+            ].map((item, index) => (
+              <li key={item} className="flex gap-3 rounded-xl border border-white/5 bg-white/[.03] p-3">
+                <span className="font-bold text-lime-400">0{index + 1}</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ol>
+        </article>
+      </section>
