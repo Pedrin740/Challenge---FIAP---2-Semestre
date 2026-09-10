@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   useContext,
 } from "react";
@@ -107,6 +107,48 @@ const AuthContext =
   createContext<AuthContextData | undefined>(
     undefined,
   );
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [users, setUsers] = React.useState<AuthUser[]>(loadUsers);
+  const [user, setUser] = React.useState<AuthUser | null>(() =>
+    loadAuthenticatedUser(users),
+  );
+
+  function login(email: string, password: string): boolean {
+    const foundUser = users.find(
+      (item) => item.email === email && item.password === password,
+    );
+
+    if (!foundUser) {
+      return false;
+    }
+
+    setUser(foundUser);
+    localStorage.setItem(
+      AUTH_STORAGE_KEY,
+      JSON.stringify({ userId: foundUser.id }),
+    );
+
+    return true;
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        users,
+        isAuthenticated: user !== null,
+        login,
+        register: () => false,
+        logout: () => {},
+        addAction: () => {},
+        getRanking: () => users,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
 
 export function useAuth() {
   const context =
