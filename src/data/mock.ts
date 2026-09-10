@@ -57,3 +57,26 @@ export const ranking = [
   },
 ];
 
+export const challenges: Challenge[] = [
+  {
+    title: "Reduza, Reutilize, Transforme!",
+    description:
+      "Mostre como você reutiliza materiais no seu dia a dia.",
+    reward: 200,
+    progress: 0,
+  },
+  {
+    title: "Semana sem desperdício",
+    description:
+      "Registre uma atitude que reduza o desperdício.",
+    reward: 150,
+    progress: 60,
+  },
+  {
+    title: "Mobilidade consciente",
+    description:
+      "Compartilhe uma alternativa sustentável de transporte.",
+    reward: 150,
+    progress: 35,
+  },
+];
