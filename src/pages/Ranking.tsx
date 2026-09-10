@@ -125,6 +125,7 @@ export function Ranking() {
                         </table>
                     </div>
                 </section>
+
                 <aside className="rounded-2xl border border-white/10 bg-[#121214] p-5">
                     <p className="text-sm text-zinc-500">
                         Sua posição
@@ -255,3 +256,20 @@ export function Ranking() {
                                                 {item.ecoRank.rank}
                                             </span>
                                         </td>
+
+                                        <td className="px-4 py-4 text-right font-bold">
+                                            {item.ecoRank.points.toLocaleString(
+                                                "pt-BR",
+                                            )}{" "}
+                                            pts
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    );
+}
