@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf } from 'lucide-react';
+import { Send, Leaf, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-export interface ActionForm {
+interface ActionForm {
   title: string;
   category: string;
   description: string;
@@ -18,6 +18,7 @@ export const SubmitAction: React.FC = () => {
     estimatedImpact: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -37,7 +38,8 @@ export const SubmitAction: React.FC = () => {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      navigate('/impact');
+      setSuccess(true);
+      setTimeout(() => navigate('/impact'), 1500);
     }, 1000);
   };
 
@@ -53,6 +55,20 @@ export const SubmitAction: React.FC = () => {
             <p className="text-sm text-gray-500">Contribua para o ranking e reduza sua pegada ecológica</p>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-xl flex items-center space-x-2 text-sm">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 p-4 bg-emerald-50 text-emerald-700 rounded-xl flex items-center space-x-2 text-sm">
+            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+            <span>Ação registrada com sucesso! Redirecionando...</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -109,9 +125,10 @@ export const SubmitAction: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-lg"
+            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? 'Enviando...' : 'Submeter Ação'}
+            <Send className="w-5 h-5" />
+            <span>{isSubmitting ? 'Enviando...' : 'Submeter Ação'}</span>
           </button>
         </form>
       </div>
