@@ -11,7 +11,7 @@ import { EcoRankDashboard } from "./pages/EcoRankDashboard";
 import { FAQ } from "./pages/FAQ";
 import { Home } from "./pages/Home;
 import { Impact } from "./pages/Impact";
-import { Integrantes } from "./pages/Integrantes";
+import { Integrantes } from "./pages/Integrantes.tsx";
 import { Login } from "./pages/Login";
 import { MeusObjetivos } from "./pages/MeusObjetivos";
 import { Perfil } from "./pages/Perfil";
