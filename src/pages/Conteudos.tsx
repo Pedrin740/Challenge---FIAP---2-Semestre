@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, ExternalLink, Clock } from 'lucide-react';
 
-export interface Article {
+interface Article {
   id: number;
   title: string;
   category: string;
@@ -66,9 +66,29 @@ export const Conteudos: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filtered.map((item) => (
-          <div key={item.id} className="p-4 border rounded">
-            <h3>{item.title}</h3>
-          </div>
+          <article
+            key={item.id}
+            className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between text-xs text-emerald-600 font-semibold mb-2">
+                <span>{item.category}</span>
+                <span className="flex items-center text-gray-400">
+                  <Clock className="w-3.5 h-3.5 mr-1" />
+                  {item.readTime}
+                </span>
+              </div>
+              <h2 className="text-lg font-bold text-gray-800 mb-2">{item.title}</h2>
+              <p className="text-sm text-gray-600 mb-4">{item.summary}</p>
+            </div>
+            <a
+              href={item.sourceUrl}
+              className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+            >
+              Ler artigo completo
+              <ExternalLink className="w-4 h-4 ml-1" />
+            </a>
+          </article>
         ))}
       </div>
     </div>
