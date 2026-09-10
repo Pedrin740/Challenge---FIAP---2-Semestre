@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, Plus } from 'lucide-react';
 
-export interface Goal {
+interface Goal {
   id: number;
   title: string;
   category: string;
@@ -59,12 +59,45 @@ export const MeusObjetivos: React.FC = () => {
 
       <div className="space-y-4">
         {goals.map((goal) => (
-          <div key={goal.id} className="p-4 border rounded flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <button onClick={() => toggleGoal(goal.id)}>
-                <CheckCircle className={`w-5 h-5 ${goal.completed ? 'text-emerald-500' : 'text-gray-300'}`} />
-              </button>
-              <span className={goal.completed ? 'line-through text-gray-400' : ''}>{goal.title}</span>
+          <div
+            key={goal.id}
+            className={`p-5 rounded-xl border bg-white shadow-sm transition-all ${
+              goal.completed ? 'border-emerald-200 bg-emerald-50/20' : 'border-gray-100'
+            }`}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start space-x-3">
+                <button
+                  onClick={() => toggleGoal(goal.id)}
+                  className={`mt-1 text-gray-300 hover:text-emerald-500 transition-colors ${
+                    goal.completed ? 'text-emerald-500' : ''
+                  }`}
+                >
+                  <CheckCircle className="w-5 h-5" />
+                </button>
+                <div>
+                  <h3
+                    className={`font-semibold text-gray-800 ${
+                      goal.completed ? 'line-through text-gray-400' : ''
+                    }`}
+                  >
+                    {goal.title}
+                  </h3>
+                  <span className="inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+                    {goal.category}
+                  </span>
+                </div>
+              </div>
+              <span className="text-xs font-semibold text-gray-500">{goal.target}</span>
+            </div>
+
+            <div className="w-full bg-gray-100 rounded-full h-2">
+              <div
+                className={`h-2 rounded-full transition-all ${
+                  goal.completed ? 'bg-emerald-500' : 'bg-teal-500'
+                }`}
+                style={{ width: `${goal.progress}%` }}
+              />
             </div>
           </div>
         ))}
