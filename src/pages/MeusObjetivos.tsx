@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { CheckCircle, Plus } from 'lucide-react';
 
 export interface Goal {
   id: number;
@@ -11,7 +11,7 @@ export interface Goal {
 }
 
 export const MeusObjetivos: React.FC = () => {
-  const [goals] = useState<Goal[]>([
+  const [goals, setGoals] = useState<Goal[]>([
     {
       id: 1,
       title: 'Pedalar 50 km para o trabalho',
@@ -38,6 +38,12 @@ export const MeusObjetivos: React.FC = () => {
     },
   ]);
 
+  const toggleGoal = (id: number) => {
+    setGoals((prev) =>
+      prev.map((g) => (g.id === id ? { ...g, completed: !g.completed } : g))
+    );
+  };
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8">
@@ -53,8 +59,13 @@ export const MeusObjetivos: React.FC = () => {
 
       <div className="space-y-4">
         {goals.map((goal) => (
-          <div key={goal.id} className="p-4 border rounded">
-            <span>{goal.title}</span>
+          <div key={goal.id} className="p-4 border rounded flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <button onClick={() => toggleGoal(goal.id)}>
+                <CheckCircle className={`w-5 h-5 ${goal.completed ? 'text-emerald-500' : 'text-gray-300'}`} />
+              </button>
+              <span className={goal.completed ? 'line-through text-gray-400' : ''}>{goal.title}</span>
+            </div>
           </div>
         ))}
       </div>
