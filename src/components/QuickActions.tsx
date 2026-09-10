@@ -54,7 +54,21 @@ export const QuickActions: React.FC = () => {
       <h2 className="text-xl font-bold text-gray-800 mb-4">Ações Rápidas</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {actions.map((action) => (
-          <div key={action.id}>{action.title}</div>
+          <button
+            key={action.id}
+            onClick={() => navigate(action.path)}
+            className="flex items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 text-left group"
+          >
+            <div className={`p-3 rounded-lg text-white ${action.color} transition-colors duration-200 mr-4`}>
+              {action.icon}
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800 group-hover:text-emerald-600 transition-colors">
+                {action.title}
+              </h3>
+              <p className="text-sm text-gray-500">{action.description}</p>
+            </div>
+          </button>
         ))}
       </div>
     </section>
