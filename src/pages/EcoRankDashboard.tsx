@@ -45,6 +45,44 @@ export function EcoRankDashboard() {
     return (
         <div className="mx-auto max-w-[1320px] p-4 pb-24 sm:p-6 lg:p-8">
             <EcoRankHeader />
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
+                    title="Pontos totais"
+                    value={ecoRank.points.toLocaleString(
+                        "pt-BR",
+                    )}
+                    helper="+120 esta semana"
+                />
+
+                <StatCard
+                    title="Ações realizadas"
+                    value={String(ecoRank.actions)}
+                    helper="+5 esta semana"
+                />
+
+                <StatCard
+                    title="CO₂ evitado"
+                    value={ecoRank.co2}
+                    helper="Total estimado"
+                />
+
+                <StatCard
+                    title="Posição no ranking"
+                    value={
+                        calculandoRanking
+                            ? "Calculando..."
+                            : `${posicaoUsuario}º`
+                    }
+                    helper="Entre todos os usuários"
+                />
+            </div>
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                <LevelCard />
+
+                <ChallengeCard />
+            </div>
         </div>
     );
 }
