@@ -143,6 +143,61 @@ export function ImpactChart() {
         });
     }
 
+    const visibleTimeline =
+        timeline.length > 7
+            ? [
+                timeline[0],
+                ...timeline.slice(-6),
+            ]
+            : timeline;
+
+    const values =
+        visibleTimeline.map(
+            (item) => item.value,
+        );
+
+    const maxValue =
+        Math.max(
+            ...values,
+            100,
+        );
+
+    const minValue =
+        Math.min(
+            ...values,
+            0,
+        );
+
+    const range =
+        Math.max(
+            maxValue - minValue,
+            100,
+        );
+
+    const chartHeight = 115;
+
+    const points = visibleTimeline
+        .map((item, index) => {
+            const x =
+                visibleTimeline.length === 1
+                    ? 180
+                    : 20 +
+                    (index /
+                        (visibleTimeline.length -
+                            1)) *
+                    320;
+
+            const y =
+                145 -
+                ((item.value -
+                    minValue) /
+                    range) *
+                chartHeight;
+
+            return `${x},${y}`;
+        })
+        .join(" ");
+
     return (
         <section className="rounded-2xl border border-white/10 bg-[#121214] p-5">
             <div className="flex items-center justify-between">
