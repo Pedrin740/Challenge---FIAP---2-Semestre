@@ -1,8 +1,16 @@
 import React from 'react';
 import { TrendingDown, Zap, Trash2, Award } from 'lucide-react';
 
+export interface StatMetric {
+  label: string;
+  value: string;
+  change: string;
+  icon: React.ReactNode;
+  bg: string;
+}
+
 export const Impact: React.FC = () => {
-  const stats = [
+  const stats: StatMetric[] = [
     {
       label: 'CO₂ Evitado',
       value: '142 kg',
@@ -51,21 +59,6 @@ export const Impact: React.FC = () => {
             <div className="text-xs text-gray-500">{stat.change}</div>
           </div>
         ))}
-      </div>
-
-      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-800 mb-4">Evolução Mensal (kg CO₂)</h2>
-        <div className="h-48 flex items-end justify-between gap-2 pt-8 px-4 border-b border-gray-100">
-          {[45, 65, 80, 95, 120, 142].map((height, idx) => (
-            <div key={idx} className="flex-1 flex flex-col items-center gap-2">
-              <div
-                style={{ height: `${(height / 150) * 100}%` }}
-                className="w-full max-w-[40px] bg-emerald-500 rounded-t-md transition-all"
-              />
-              <span className="text-xs text-gray-400">Mês {idx + 1}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
