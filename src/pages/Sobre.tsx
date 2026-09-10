@@ -68,3 +68,22 @@ export function Sobre() {
           ))}
         </div>
       </section>
+
+            <section className="mt-6 grid gap-8 rounded-3xl border border-white/10 bg-[#121214] p-6 sm:p-8 lg:grid-cols-2 lg:items-center">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-lime-400">Tecnologias utilizadas</p>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">Frontend moderno e preparado para evolução</h2>
+          <p className="mt-4 leading-7 text-zinc-400">
+            O protótipo atual foi adaptado para React, Vite e TypeScript, utilizando Tailwind CSS v4 para a interface. A arquitetura permite futuras integrações com backend, banco de dados e inteligência artificial para validação das ações.
+          </p>
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {["React", "Vite", "TypeScript", "Tailwind CSS v4"].map((item) => (
+              <span key={item} className="rounded-xl border border-lime-400/20 bg-lime-400/5 px-3 py-3 text-center text-xs font-semibold text-lime-300">{item}</span>
+            ))}
+          </div>
+        </div>
+        <img src="/images/tecnologias-utilizadas.png" alt="Tecnologias utilizadas no projeto" className="w-full rounded-2xl border border-white/10" />
+      </section>
+    </div>
+  );
+}
