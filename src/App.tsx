@@ -19,4 +19,28 @@ import { Ranking } from "./pages/Ranking";
 import { SubmitAction } from "./pages/SubmitAction";
 import { Sobre } from "./pages/Sobre";
 
-
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/objetivos" element={<MeusObjetivos />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="/sobre" element={<Sobre />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/contato" element={<Contato />} />
+        <Route path="/integrantes" element={<Integrantes />} />
+        <Route path="/conteudos" element={<Conteudos />} />
+        <Route path="/ecorank" element={<EcoRankDashboard />} />
+        <Route path="/ecorank/ranking" element={<Ranking />} />
+        <Route path="/ecorank/desafios" element={<Challenges />} />
+        <Route path="/ecorank/enviar" element={<SubmitAction />} />
+        <Route path="/ecorank/impacto" element={<Impact />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
