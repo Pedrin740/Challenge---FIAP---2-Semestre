@@ -66,7 +66,7 @@ type AuthContextData = {
 };
 
 const initialUsers: AuthUser[] = [
-    
+
 ];
 
 const USERS_STORAGE_KEY = "soulup_users";
@@ -85,6 +85,22 @@ function loadUsers(): AuthUser[] {
 
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
   return initialUsers;
+}
+
+function loadAuthenticatedUser(users: AuthUser[]): AuthUser | null {
+  const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+
+  if (!storedAuth) {
+    return null;
+  }
+
+  try {
+    const authData = JSON.parse(storedAuth);
+
+    return users.find((user) => user.id === authData.userId) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 const AuthContext =
