@@ -41,6 +41,14 @@ const integrantes = [
     linkedin:
       "https://www.linkedin.com/in/guilherme-camargo-a06410410/",
   },
+  {
+    nome: "Arthur Chang Skolimoski",
+    rm: "572510",
+    imagem: "/images/arthur.jpeg",
+    github: "https://github.com/Thiefman469",
+    linkedin:
+      "https://www.linkedin.com/in/arthur-chang-skolimoski-750598397/",
+  },
 ];
 
 export function Integrantes() {
@@ -61,16 +69,10 @@ export function Integrantes() {
       </section>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
-        {integrantes.map((integrante, index) => (
+        {integrantes.map((integrante) => (
           <article
             key={integrante.rm}
-            className={`rounded-3xl border border-white/10 bg-[#121214] p-6 text-center transition hover:-translate-y-1 hover:border-lime-400/20 lg:col-span-2 ${
-              index === 3
-                ? "lg:col-start-2"
-                : index === 4
-                  ? "lg:col-start-4"
-                  : ""
-            }`}
+            className="rounded-3xl border border-white/10 bg-[#121214] p-6 text-center transition hover:-translate-y-1 hover:border-lime-400/20 lg:col-span-2"
           >
             <img
               src={integrante.imagem}
