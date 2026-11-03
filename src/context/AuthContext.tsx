@@ -1,10 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode, } from "react";
+import { cadastrarUsuario, realizarLogin, realizarLogout, buscarUsuarioAutenticado, type UsuarioAutenticado, } from "../services/auth";
 
 export type Rank =
   | "Bronze"
@@ -47,7 +42,6 @@ export type AuthUser = {
   id: number;
   name: string;
   email: string;
-  password: string;
   ecoRank: EcoRankData;
   goals: UserGoal[];
   actionHistory?: UserAction[];
@@ -57,22 +51,21 @@ type AuthContextData = {
   user: AuthUser | null;
   users: AuthUser[];
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
-  register: (name: string, email: string, password: string) => boolean;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
   addAction: (points: number, category: string) => void;
   getRanking: () => AuthUser[];
 };
 
 const USERS_STORAGE_KEY = "soulup_users";
-const AUTH_STORAGE_KEY = "soulup_auth";
+const AUTH_STORAGE_KEY = "ecorank_token";
 
 const initialUsers: AuthUser[] = [
   {
     id: 1,
     name: "InovaTech",
     email: "inovatech@email.com",
-    password: "123456",
     ecoRank: {
       points: 1250,
       actions: 23,
@@ -98,16 +91,14 @@ const initialUsers: AuthUser[] = [
       {
         id: 1,
         title: "Reciclar durante o mês",
-        description:
-          "Separar corretamente os resíduos recicláveis.",
+        description: "Separar corretamente os resíduos recicláveis.",
         progress: 3,
         target: 10,
       },
       {
         id: 2,
         title: "Usar menos plástico",
-        description:
-          "Evitar produtos descartáveis durante a semana.",
+        description: "Evitar produtos descartáveis durante a semana.",
         progress: 4,
         target: 7,
       },
@@ -117,7 +108,6 @@ const initialUsers: AuthUser[] = [
     id: 2,
     name: "Ana Clara",
     email: "anaclara@email.com",
-    password: "123456",
     ecoRank: {
       points: 2840,
       actions: 31,
@@ -143,16 +133,14 @@ const initialUsers: AuthUser[] = [
       {
         id: 3,
         title: "Economizar água",
-        description:
-          "Adotar hábitos para reduzir o consumo de água.",
+        description: "Adotar hábitos para reduzir o consumo de água.",
         progress: 6,
         target: 10,
       },
       {
         id: 4,
         title: "Mobilidade sustentável",
-        description:
-          "Escolher meios de transporte menos poluentes.",
+        description: "Escolher meios de transporte menos poluentes.",
         progress: 5,
         target: 10,
       },
@@ -162,7 +150,6 @@ const initialUsers: AuthUser[] = [
     id: 3,
     name: "Pedro Henrique",
     email: "pedrohenrique@email.com",
-    password: "123456",
     ecoRank: {
       points: 2310,
       actions: 28,
@@ -188,16 +175,14 @@ const initialUsers: AuthUser[] = [
       {
         id: 5,
         title: "Reduzir desperdícios",
-        description:
-          "Evitar desperdícios de materiais no dia a dia.",
+        description: "Evitar desperdícios de materiais no dia a dia.",
         progress: 7,
         target: 10,
       },
       {
         id: 6,
         title: "Usar transporte sustentável",
-        description:
-          "Priorizar bicicleta, caminhada ou transporte público.",
+        description: "Priorizar bicicleta, caminhada ou transporte público.",
         progress: 6,
         target: 10,
       },
@@ -207,7 +192,6 @@ const initialUsers: AuthUser[] = [
     id: 4,
     name: "Mariana Costa",
     email: "mariana@email.com",
-    password: "123456",
     ecoRank: {
       points: 1980,
       actions: 21,
@@ -233,16 +217,14 @@ const initialUsers: AuthUser[] = [
       {
         id: 7,
         title: "Economizar energia",
-        description:
-          "Reduzir o consumo de energia elétrica.",
+        description: "Reduzir o consumo de energia elétrica.",
         progress: 5,
         target: 10,
       },
       {
         id: 8,
         title: "Reduzir o plástico",
-        description:
-          "Diminuir o uso de produtos descartáveis.",
+        description: "Diminuir o uso de produtos descartáveis.",
         progress: 4,
         target: 10,
       },
@@ -252,7 +234,6 @@ const initialUsers: AuthUser[] = [
     id: 5,
     name: "João Victor",
     email: "joao@email.com",
-    password: "123456",
     ecoRank: {
       points: 1120,
       actions: 16,
@@ -278,16 +259,14 @@ const initialUsers: AuthUser[] = [
       {
         id: 9,
         title: "Caminhar mais",
-        description:
-          "Substituir pequenos deslocamentos de carro por caminhada.",
+        description: "Substituir pequenos deslocamentos de carro por caminhada.",
         progress: 4,
         target: 10,
       },
       {
         id: 10,
         title: "Reciclar em casa",
-        description:
-          "Separar corretamente materiais recicláveis.",
+        description: "Separar corretamente materiais recicláveis.",
         progress: 5,
         target: 10,
       },
@@ -295,10 +274,7 @@ const initialUsers: AuthUser[] = [
   },
 ];
 
-const AuthContext =
-  createContext<AuthContextData | undefined>(
-    undefined,
-  );
+const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 function getRankInfo(points: number) {
   if (points >= 7000) {
@@ -353,18 +329,12 @@ function updateCategoryPercentages(
   }
 
   const updated = categories.map((item) => {
-    const previousCount =
-      (item.value / 100) * totalActions;
-
-    const newCount =
-      previousCount +
-      (item.label === category ? 1 : 0);
+    const previousCount = (item.value / 100) * totalActions;
+    const newCount = previousCount + (item.label === category ? 1 : 0);
 
     return {
       ...item,
-      value: Math.round(
-        (newCount / (totalActions + 1)) * 100,
-      ),
+      value: Math.round((newCount / (totalActions + 1)) * 100),
     };
   });
 
@@ -373,22 +343,17 @@ function updateCategoryPercentages(
     0,
   );
 
-  const difference =
-    100 - totalPercentage;
+  const difference = 100 - totalPercentage;
 
   if (difference !== 0) {
-    const selectedIndex =
-      updated.findIndex(
-        (item) =>
-          item.label === category,
-      );
+    const selectedIndex = updated.findIndex(
+      (item) => item.label === category,
+    );
 
     if (selectedIndex >= 0) {
       updated[selectedIndex] = {
         ...updated[selectedIndex],
-        value:
-          updated[selectedIndex].value +
-          difference,
+        value: updated[selectedIndex].value + difference,
       };
     }
   }
@@ -397,100 +362,53 @@ function updateCategoryPercentages(
 }
 
 function loadUsers(): AuthUser[] {
-  const savedUsers =
-    localStorage.getItem(
-      USERS_STORAGE_KEY,
-    );
+  const savedUsers = localStorage.getItem(USERS_STORAGE_KEY);
 
   if (!savedUsers) {
-    localStorage.setItem(
-      USERS_STORAGE_KEY,
-      JSON.stringify(initialUsers),
-    );
-
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
     return initialUsers;
   }
 
   try {
-    const parsedUsers =
-      JSON.parse(savedUsers) as AuthUser[];
+    const parsedUsers = JSON.parse(savedUsers) as AuthUser[];
 
-    return parsedUsers.map(
-      (savedUser) => ({
-        ...savedUser,
+    return parsedUsers.map((savedUser) => {
+      const { password: _password, ...safeUser } =
+        savedUser as AuthUser & { password?: string };
 
-        goals:
-          savedUser.goals ??
-          [
-            {
-              id:
-                savedUser.id * 100 + 1,
-              title:
-                "Começar a reciclar",
-              description:
-                "Separar corretamente os resíduos da sua casa.",
-              progress: 0,
-              target: 10,
-            },
-            {
-              id:
-                savedUser.id * 100 + 2,
-              title:
-                "Reduzir o uso de plástico",
-              description:
-                "Evitar produtos descartáveis no dia a dia.",
-              progress: 0,
-              target: 7,
-            },
-          ],
-
-        actionHistory:
-          savedUser.actionHistory ??
-          [],
-      }),
-    );
+      return {
+        ...safeUser,
+        goals: safeUser.goals ?? [],
+        actionHistory: safeUser.actionHistory ?? [],
+      };
+    });
   } catch {
-    localStorage.setItem(
-      USERS_STORAGE_KEY,
-      JSON.stringify(initialUsers),
-    );
-
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
     return initialUsers;
   }
 }
 
-function loadAuthenticatedUser(
-  users: AuthUser[],
-): AuthUser | null {
-  const savedAuth =
-    localStorage.getItem(
-      AUTH_STORAGE_KEY,
-    );
+function mapearUsuario(usuario: UsuarioAutenticado): AuthUser {
+  const rankInfo = getRankInfo(usuario.pontos);
 
-  if (!savedAuth) {
-    return null;
-  }
-
-  try {
-    const authData =
-      JSON.parse(savedAuth) as {
-        userId: number;
-      };
-
-    return (
-      users.find(
-        (item) =>
-          item.id ===
-          authData.userId,
-      ) ?? null
-    );
-  } catch {
-    localStorage.removeItem(
-      AUTH_STORAGE_KEY,
-    );
-
-    return null;
-  }
+  return {
+    id: usuario.id,
+    name: usuario.nome,
+    email: usuario.email,
+    ecoRank: {
+      points: usuario.pontos,
+      actions: 0,
+      rank: rankInfo.rank,
+      ranking: "",
+      nextRank: rankInfo.nextRank,
+      nextRankPoints: rankInfo.nextRankPoints,
+      co2: "0 kg",
+      categories: [],
+      challengeProgress: {},
+    },
+    goals: [],
+    actionHistory: [],
+  };
 }
 
 export function AuthProvider({
@@ -498,282 +416,179 @@ export function AuthProvider({
 }: {
   children: ReactNode;
 }) {
-  const [users, setUsers] =
-    useState<AuthUser[]>(() =>
-      loadUsers(),
-    );
-
-  const [user, setUser] =
-    useState<AuthUser | null>(() =>
-      loadAuthenticatedUser(
-        users,
-      ),
-    );
+  const [users, setUsers] = useState<AuthUser[]>(() => loadUsers());
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem(AUTH_STORAGE_KEY),
+  );
 
   useEffect(() => {
-    localStorage.setItem(
-      USERS_STORAGE_KEY,
-      JSON.stringify(users),
-    );
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(
-        AUTH_STORAGE_KEY,
-        JSON.stringify({
-          userId: user.id,
-        }),
-      );
-    } else {
-      localStorage.removeItem(
-        AUTH_STORAGE_KEY,
-      );
+    let ativo = true;
+
+    async function restaurarSessao() {
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      try {
+        const usuario = await buscarUsuarioAutenticado(token);
+
+        if (!ativo) return;
+
+        const usuarioMapeado = mapearUsuario(usuario);
+
+        setUser(usuarioMapeado);
+        setUsers((atuais) => [
+          ...atuais.filter((item) => item.id !== usuarioMapeado.id),
+          usuarioMapeado,
+        ]);
+      } catch (error) {
+        if (!ativo) return;
+
+        console.error("Não foi possível restaurar a sessão:", error);
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+        setToken(null);
+        setUser(null);
+      }
     }
-  }, [user]);
 
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
+    void restaurarSessao();
 
-    const updatedUser =
-      users.find(
-        (item) =>
-          item.id === user.id,
-      );
+    return () => {
+      ativo = false;
+    };
+  }, [token]);
 
-    if (updatedUser) {
-      setUser(updatedUser);
-    }
-  }, [users]);
-
-  function login(
+  async function login(
     email: string,
     password: string,
-  ): boolean {
-    const normalizedEmail =
-      email.trim().toLowerCase();
+  ): Promise<boolean> {
+    try {
+      const sessao = await realizarLogin({
+        email: email.trim().toLowerCase(),
+        senha: password,
+      });
 
-    const foundUser =
-      users.find(
-        (item) =>
-          item.email.toLowerCase() ===
-            normalizedEmail &&
-          item.password === password,
-      );
+      localStorage.setItem(AUTH_STORAGE_KEY, sessao.token);
+      setToken(sessao.token);
 
-    if (!foundUser) {
+      const usuarioMapeado = mapearUsuario(sessao.usuario);
+
+      setUser(usuarioMapeado);
+      setUsers((atuais) => [
+        ...atuais.filter((item) => item.id !== usuarioMapeado.id),
+        usuarioMapeado,
+      ]);
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao realizar login:", error);
       return false;
     }
-
-    setUser(foundUser);
-
-    return true;
   }
 
-  function register(
+  async function register(
     name: string,
     email: string,
     password: string,
-  ): boolean {
-    const normalizedName =
-      name.trim();
+  ): Promise<boolean> {
+    try {
+      const sessao = await cadastrarUsuario({
+        nome: name.trim(),
+        email: email.trim().toLowerCase(),
+        senha: password,
+      });
 
-    const normalizedEmail =
-      email.trim().toLowerCase();
+      localStorage.setItem(AUTH_STORAGE_KEY, sessao.token);
+      setToken(sessao.token);
 
-    const emailAlreadyExists =
-      users.some(
-        (item) =>
-          item.email.toLowerCase() ===
-          normalizedEmail,
-      );
+      const usuarioMapeado = mapearUsuario(sessao.usuario);
 
-    if (emailAlreadyExists) {
+      setUser(usuarioMapeado);
+      setUsers((atuais) => [
+        ...atuais.filter((item) => item.id !== usuarioMapeado.id),
+        usuarioMapeado,
+      ]);
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error);
       return false;
     }
-
-    const newUser: AuthUser = {
-      id: Date.now(),
-      name: normalizedName,
-      email: normalizedEmail,
-      password,
-
-      ecoRank: {
-        points: 0,
-        actions: 0,
-        rank: "Bronze",
-        ranking: "Novo usuário",
-        nextRank: "Prata",
-        nextRankPoints: 1000,
-        co2: "0 kg",
-
-        categories: [
-          {
-            label: "Reciclagem",
-            value: 0,
-          },
-          {
-            label: "Mobilidade",
-            value: 0,
-          },
-          {
-            label: "Economia de água",
-            value: 0,
-          },
-          {
-            label: "Energia limpa",
-            value: 0,
-          },
-          {
-            label: "Outros",
-            value: 0,
-          },
-        ],
-
-        challengeProgress: {
-          "Reduza, Reutilize, Transforme!": 0,
-          "Semana sem desperdício": 0,
-          "Mobilidade consciente": 0,
-        },
-      },
-
-      goals: [
-        {
-          id: Date.now() + 1,
-          title: "Começar a reciclar",
-          description:
-            "Separar corretamente os resíduos da sua casa.",
-          progress: 0,
-          target: 10,
-        },
-        {
-          id: Date.now() + 2,
-          title: "Reduzir o uso de plástico",
-          description:
-            "Evitar produtos descartáveis no dia a dia.",
-          progress: 0,
-          target: 7,
-        },
-      ],
-
-      actionHistory: [],
-    };
-
-    setUsers((currentUsers) => [
-      ...currentUsers,
-      newUser,
-    ]);
-
-    setUser(newUser);
-
-    return true;
   }
 
-  function logout() {
+  async function logout(): Promise<void> {
+    const tokenAtual = token;
+
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    setToken(null);
     setUser(null);
+
+    if (tokenAtual) {
+      try {
+        await realizarLogout(tokenAtual);
+      } catch (error) {
+        console.error("Erro ao realizar logout:", error);
+      }
+    }
   }
 
-  function addAction(
-    points: number,
-    category: string,
-  ) {
-    if (!user) {
-      return;
-    }
+  function addAction(points: number, category: string) {
+    if (!user) return;
 
     setUsers((currentUsers) =>
-      currentUsers.map(
-        (currentUser) => {
-          if (
-            currentUser.id !==
-            user.id
-          ) {
-            return currentUser;
-          }
+      currentUsers.map((currentUser) => {
+        if (currentUser.id !== user.id) return currentUser;
 
-          const currentActions =
-            currentUser.ecoRank.actions;
+        const currentActions = currentUser.ecoRank.actions;
+        const newPoints = currentUser.ecoRank.points + points;
+        const rankInfo = getRankInfo(newPoints);
+        const actionHistory = currentUser.actionHistory ?? [];
 
-          const newPoints =
-            currentUser.ecoRank.points +
-            points;
+        const newAction: UserAction = {
+          id: Date.now(),
+          points,
+          category,
+          date: new Date().toISOString(),
+        };
 
-          const rankInfo =
-            getRankInfo(newPoints);
+        const updatedCategories = updateCategoryPercentages(
+          currentUser.ecoRank.categories,
+          currentActions,
+          category,
+        );
 
-          const actionHistory =
-            currentUser.actionHistory ??
-            [];
-
-          const newAction: UserAction = {
-            id: Date.now(),
-            points,
-            category,
-            date:
-              new Date().toISOString(),
-          };
-
-          const updatedCategories =
-            updateCategoryPercentages(
-              currentUser.ecoRank
-                .categories,
-              currentActions,
-              category,
-            );
-
-          return {
-            ...currentUser,
-
-            ecoRank: {
-              ...currentUser.ecoRank,
-
-              points: newPoints,
-
-              actions:
-                currentActions + 1,
-
-              rank: rankInfo.rank,
-
-              nextRank:
-                rankInfo.nextRank,
-
-              nextRankPoints:
-                rankInfo.nextRankPoints,
-
-              ranking:
-                currentUser.ecoRank
-                  .ranking,
-
-              co2:
-                (
-                  parseFloat(
-                    currentUser.ecoRank.co2,
-                  ) +
-                  points / 100
-                ).toFixed(1) +
-                " kg",
-
-              categories:
-                updatedCategories,
-            },
-
-            actionHistory: [
-              ...actionHistory,
-              newAction,
-            ],
-          };
-        },
-      ),
+        return {
+          ...currentUser,
+          ecoRank: {
+            ...currentUser.ecoRank,
+            points: newPoints,
+            actions: currentActions + 1,
+            rank: rankInfo.rank,
+            nextRank: rankInfo.nextRank,
+            nextRankPoints: rankInfo.nextRankPoints,
+            ranking: currentUser.ecoRank.ranking,
+            co2:
+              (
+                parseFloat(currentUser.ecoRank.co2) +
+                points / 100
+              ).toFixed(1) + " kg",
+            categories: updatedCategories,
+          },
+          actionHistory: [...actionHistory, newAction],
+        };
+      }),
     );
   }
 
   function getRanking() {
     return [...users].sort(
-      (a, b) =>
-        b.ecoRank.points -
-        a.ecoRank.points,
+      (a, b) => b.ecoRank.points - a.ecoRank.points,
     );
   }
 
@@ -782,8 +597,7 @@ export function AuthProvider({
       value={{
         user,
         users,
-        isAuthenticated:
-          Boolean(user),
+        isAuthenticated: Boolean(user),
         login,
         register,
         logout,
@@ -797,8 +611,7 @@ export function AuthProvider({
 }
 
 export function useAuth() {
-  const context =
-    useContext(AuthContext);
+  const context = useContext(AuthContext);
 
   if (!context) {
     throw new Error(

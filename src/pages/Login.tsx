@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
 import { useAuth } from "../context/AuthContext";
 
 type LoginFormData = {
@@ -13,37 +12,30 @@ export function Login() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>();
 
-  const [loginError, setLoginError] =
-    useState("");
+  const [loginError, setLoginError] = useState("");
 
   const { login } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleLogin(
-    data: LoginFormData,
-  ) {
+  async function handleLogin(data: LoginFormData) {
     setLoginError("");
 
-    const success = login(
-      data.email,
-      data.password,
-    );
+    const success = await login(data.email, data.password);
 
     if (!success) {
       setLoginError(
-        "E-mail ou senha incorretos.",
+        "Não foi possível entrar. Verifique seu e-mail e sua senha.",
       );
 
       return;
     }
 
-    const destination =
-      location.state?.from || "/";
+    const destination = location.state?.from || "/";
 
     navigate(destination, {
       replace: true,
@@ -81,13 +73,10 @@ export function Login() {
               placeholder="seu@email.com"
               className="w-full rounded-xl border border-white/10 bg-[#0a0a0c] px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-purple-500/50"
               {...register("email", {
-                required:
-                  "Informe seu e-mail.",
+                required: "Informe seu e-mail.",
                 pattern: {
-                  value:
-                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message:
-                    "Digite um e-mail válido.",
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Digite um e-mail válido.",
                 },
               })}
             />
@@ -109,12 +98,10 @@ export function Login() {
               placeholder="Digite sua senha"
               className="w-full rounded-xl border border-white/10 bg-[#0a0a0c] px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-purple-500/50"
               {...register("password", {
-                required:
-                  "Informe sua senha.",
+                required: "Informe sua senha.",
                 minLength: {
                   value: 6,
-                  message:
-                    "A senha deve possuir pelo menos 6 caracteres.",
+                  message: "A senha deve possuir pelo menos 6 caracteres.",
                 },
               })}
             />
@@ -134,25 +121,12 @@ export function Login() {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-purple-600 px-5 py-3 font-bold text-white transition hover:bg-purple-500"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-purple-600 px-5 py-3 font-bold text-white transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Entrar
+            {isSubmitting ? "Entrando..." : "Entrar"}
           </button>
         </form>
-
-        <div className="mt-6 rounded-xl border border-lime-400/10 bg-lime-400/[.03] p-4">
-          <p className="text-xs font-semibold text-lime-400">
-            Conta para teste
-          </p>
-
-          <p className="mt-2 text-xs text-zinc-500">
-            E-mail: inovatech@email.com
-          </p>
-
-          <p className="mt-1 text-xs text-zinc-500">
-            Senha: 123456
-          </p>
-        </div>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-zinc-500">
