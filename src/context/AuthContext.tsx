@@ -447,6 +447,27 @@ export function AuthProvider({
   }, [users]);
 
   useEffect(() => {
+    function tratarSessaoExpirada() {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      setToken(null);
+      setUser(null);
+      setIsLoading(false);
+    }
+
+    window.addEventListener(
+      "ecorank:session-expired",
+      tratarSessaoExpirada,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "ecorank:session-expired",
+        tratarSessaoExpirada,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
     let ativo = true;
 
     async function restaurarSessao() {

@@ -12,6 +12,16 @@ type ApiOptions = {
   body?: unknown;
 };
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 export async function api<T>(
   endpoint: string,
   options: ApiOptions = {},
@@ -42,8 +52,13 @@ export async function api<T>(
   if (!response.ok) {
     const errorMessage = await response.text();
 
-    throw new Error(
+    if (response.status === 401 && token) {
+      window.dispatchEvent(new Event("ecorank:session-expired"));
+    }
+
+    throw new ApiError(
       errorMessage || `Erro na requisição: ${response.status}`,
+      response.status,
     );
   }
 
