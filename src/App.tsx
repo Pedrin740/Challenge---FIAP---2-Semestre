@@ -20,6 +20,7 @@ import { Ranking } from "./pages/Ranking";
 import { SubmitAction } from "./pages/SubmitAction";
 import { Sobre } from "./pages/Sobre";
 import { Missoes } from "./pages/Missoes";
+import { Conquistas } from "./pages/Conquistas";
 
 export default function App() {
   return (
@@ -59,6 +60,14 @@ export default function App() {
           element={
             <RotaProtegida>
               <Missoes />
+            </RotaProtegida>
+          }
+        />
+        <Route
+           path="/conquistas"
+           element={
+            <RotaProtegida>
+              <Conquistas />
             </RotaProtegida>
           }
         />
