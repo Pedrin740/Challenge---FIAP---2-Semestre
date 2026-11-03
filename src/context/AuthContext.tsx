@@ -77,221 +77,7 @@ type AuthContextData = {
   getRanking: () => AuthUser[];
 };
 
-const USERS_STORAGE_KEY = "soulup_users";
 const AUTH_STORAGE_KEY = "ecorank_token";
-
-const initialUsers: AuthUser[] = [
-  {
-    id: 1,
-    name: "InovaTech",
-    email: "inovatech@email.com",
-    ecoRank: {
-      points: 1250,
-      actions: 23,
-      rank: "Prata",
-      ranking: "Top 18%",
-      nextRank: "Ouro",
-      nextRankPoints: 2000,
-      co2: "48,7 kg",
-      categories: [
-        { label: "Reciclagem", value: 35 },
-        { label: "Mobilidade", value: 25 },
-        { label: "Economia de água", value: 20 },
-        { label: "Energia limpa", value: 10 },
-        { label: "Outros", value: 10 },
-      ],
-      challengeProgress: {
-        "Reduza, Reutilize, Transforme!": 0,
-        "Semana sem desperdício": 60,
-        "Mobilidade consciente": 35,
-      },
-    },
-    goals: [
-      {
-        id: 1,
-        title: "Reciclar durante o mês",
-        description: "Separar corretamente os resíduos recicláveis.",
-        progress: 3,
-        target: 10,
-      },
-      {
-        id: 2,
-        title: "Usar menos plástico",
-        description: "Evitar produtos descartáveis durante a semana.",
-        progress: 4,
-        target: 7,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Ana Clara",
-    email: "anaclara@email.com",
-    ecoRank: {
-      points: 2840,
-      actions: 31,
-      rank: "Ouro",
-      ranking: "Top 5%",
-      nextRank: "Diamante",
-      nextRankPoints: 4000,
-      co2: "82,4 kg",
-      categories: [
-        { label: "Reciclagem", value: 30 },
-        { label: "Mobilidade", value: 30 },
-        { label: "Economia de água", value: 15 },
-        { label: "Energia limpa", value: 15 },
-        { label: "Outros", value: 10 },
-      ],
-      challengeProgress: {
-        "Reduza, Reutilize, Transforme!": 100,
-        "Semana sem desperdício": 80,
-        "Mobilidade consciente": 60,
-      },
-    },
-    goals: [
-      {
-        id: 3,
-        title: "Economizar água",
-        description: "Adotar hábitos para reduzir o consumo de água.",
-        progress: 6,
-        target: 10,
-      },
-      {
-        id: 4,
-        title: "Mobilidade sustentável",
-        description: "Escolher meios de transporte menos poluentes.",
-        progress: 5,
-        target: 10,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Pedro Henrique",
-    email: "pedrohenrique@email.com",
-    ecoRank: {
-      points: 2310,
-      actions: 28,
-      rank: "Ouro",
-      ranking: "Top 10%",
-      nextRank: "Diamante",
-      nextRankPoints: 4000,
-      co2: "69,2 kg",
-      categories: [
-        { label: "Reciclagem", value: 40 },
-        { label: "Mobilidade", value: 20 },
-        { label: "Economia de água", value: 15 },
-        { label: "Energia limpa", value: 15 },
-        { label: "Outros", value: 10 },
-      ],
-      challengeProgress: {
-        "Reduza, Reutilize, Transforme!": 75,
-        "Semana sem desperdício": 40,
-        "Mobilidade consciente": 90,
-      },
-    },
-    goals: [
-      {
-        id: 5,
-        title: "Reduzir desperdícios",
-        description: "Evitar desperdícios de materiais no dia a dia.",
-        progress: 7,
-        target: 10,
-      },
-      {
-        id: 6,
-        title: "Usar transporte sustentável",
-        description: "Priorizar bicicleta, caminhada ou transporte público.",
-        progress: 6,
-        target: 10,
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "Mariana Costa",
-    email: "mariana@email.com",
-    ecoRank: {
-      points: 1980,
-      actions: 21,
-      rank: "Prata",
-      ranking: "Top 15%",
-      nextRank: "Ouro",
-      nextRankPoints: 2000,
-      co2: "54,8 kg",
-      categories: [
-        { label: "Reciclagem", value: 30 },
-        { label: "Mobilidade", value: 20 },
-        { label: "Economia de água", value: 25 },
-        { label: "Energia limpa", value: 15 },
-        { label: "Outros", value: 10 },
-      ],
-      challengeProgress: {
-        "Reduza, Reutilize, Transforme!": 50,
-        "Semana sem desperdício": 70,
-        "Mobilidade consciente": 40,
-      },
-    },
-    goals: [
-      {
-        id: 7,
-        title: "Economizar energia",
-        description: "Reduzir o consumo de energia elétrica.",
-        progress: 5,
-        target: 10,
-      },
-      {
-        id: 8,
-        title: "Reduzir o plástico",
-        description: "Diminuir o uso de produtos descartáveis.",
-        progress: 4,
-        target: 10,
-      },
-    ],
-  },
-  {
-    id: 5,
-    name: "João Victor",
-    email: "joao@email.com",
-    ecoRank: {
-      points: 1120,
-      actions: 16,
-      rank: "Prata",
-      ranking: "Top 25%",
-      nextRank: "Ouro",
-      nextRankPoints: 2000,
-      co2: "32,5 kg",
-      categories: [
-        { label: "Reciclagem", value: 25 },
-        { label: "Mobilidade", value: 35 },
-        { label: "Economia de água", value: 15 },
-        { label: "Energia limpa", value: 15 },
-        { label: "Outros", value: 10 },
-      ],
-      challengeProgress: {
-        "Reduza, Reutilize, Transforme!": 25,
-        "Semana sem desperdício": 30,
-        "Mobilidade consciente": 50,
-      },
-    },
-    goals: [
-      {
-        id: 9,
-        title: "Caminhar mais",
-        description: "Substituir pequenos deslocamentos de carro por caminhada.",
-        progress: 4,
-        target: 10,
-      },
-      {
-        id: 10,
-        title: "Reciclar em casa",
-        description: "Separar corretamente materiais recicláveis.",
-        progress: 5,
-        target: 10,
-      },
-    ],
-  },
-];
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
@@ -380,33 +166,6 @@ function updateCategoryPercentages(
   return updated;
 }
 
-function loadUsers(): AuthUser[] {
-  const savedUsers = localStorage.getItem(USERS_STORAGE_KEY);
-
-  if (!savedUsers) {
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
-    return initialUsers;
-  }
-
-  try {
-    const parsedUsers = JSON.parse(savedUsers) as AuthUser[];
-
-    return parsedUsers.map((savedUser) => {
-      const { password: _password, ...safeUser } =
-        savedUser as AuthUser & { password?: string };
-
-      return {
-        ...safeUser,
-        goals: safeUser.goals ?? [],
-        actionHistory: safeUser.actionHistory ?? [],
-      };
-    });
-  } catch {
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(initialUsers));
-    return initialUsers;
-  }
-}
-
 function mapearUsuario(usuario: UsuarioAutenticado): AuthUser {
   const rankInfo = getRankInfo(usuario.pontos);
 
@@ -435,7 +194,7 @@ export function AuthProvider({
 }: {
   children: ReactNode;
 }) {
-  const [users, setUsers] = useState<AuthUser[]>(() => loadUsers());
+  const [users, setUsers] = useState<AuthUser[]>([]);
 
   const [user, setUser] = useState<AuthUser | null>(null);
 
@@ -446,10 +205,6 @@ export function AuthProvider({
   const [isLoading, setIsLoading] = useState<boolean>(() =>
     Boolean(localStorage.getItem(AUTH_STORAGE_KEY)),
   );
-
-  useEffect(() => {
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-  }, [users]);
 
   useEffect(() => {
     function tratarSessaoExpirada() {
