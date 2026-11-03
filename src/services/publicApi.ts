@@ -18,6 +18,7 @@ export type CatalogoAcao = {
   rotulo: string;
   categoria: string;
   pontos: number;
+  co2Kg: number;
 };
 
 export type Desafio = {

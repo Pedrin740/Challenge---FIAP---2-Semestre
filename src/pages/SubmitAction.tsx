@@ -1,26 +1,10 @@
-import { useState, type ChangeEvent } from "react";
-
-import {
-  useForm,
-  type SubmitHandler,
-} from "react-hook-form";
-
-import {
-  Link,
-  useNavigate,
-} from "react-router-dom";
-
+import { useEffect, useState, type ChangeEvent } from "react";
+import { useForm, type SubmitHandler, } from "react-hook-form";
+import { Link, useNavigate, } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
 import { EcoRankHeader } from "../components/EcoRankHeader";
 import { Icon } from "../components/Icons";
-
-type ActionOption = {
-  id: string;
-  label: string;
-  category: string;
-  points: number;
-};
+import { buscarCatalogoAcoes, type CatalogoAcao, } from "../services/publicApi";
 
 type FormData = {
   action: string;
@@ -28,79 +12,13 @@ type FormData = {
   proof: FileList;
 };
 
-const actionOptions: ActionOption[] = [
-  {
-    id: "reciclagem-residuos",
-    label: "Separei corretamente meus resíduos",
-    category: "Reciclagem",
-    points: 100,
-  },
-  {
-    id: "reutilizacao-materiais",
-    label: "Reutilizei materiais que seriam descartados",
-    category: "Reciclagem",
-    points: 150,
-  },
-  {
-    id: "bicicleta-caminhada",
-    label: "Usei bicicleta ou caminhei como transporte",
-    category: "Mobilidade",
-    points: 150,
-  },
-  {
-    id: "transporte-publico",
-    label: "Utilizei transporte público",
-    category: "Mobilidade",
-    points: 100,
-  },
-  {
-    id: "economia-agua",
-    label: "Adotei uma prática para economizar água",
-    category: "Economia de água",
-    points: 80,
-  },
-  {
-    id: "banho-consciente",
-    label: "Reduzi o tempo do meu banho",
-    category: "Economia de água",
-    points: 60,
-  },
-  {
-    id: "economia-energia",
-    label: "Reduzi o consumo de energia",
-    category: "Energia limpa",
-    points: 90,
-  },
-  {
-    id: "desligar-eletronicos",
-    label: "Desliguei aparelhos que não estavam em uso",
-    category: "Energia limpa",
-    points: 70,
-  },
-  {
-    id: "plantio",
-    label: "Plantei ou cuidei de uma área verde",
-    category: "Outros",
-    points: 200,
-  },
-  {
-    id: "sacolas-reutilizaveis",
-    label: "Utilizei uma alternativa às sacolas descartáveis",
-    category: "Outros",
-    points: 100,
-  },
-];
-
-function validateVideoDuration(
+async function validateVideoDuration(
   file: File,
 ): Promise<boolean | string> {
   return new Promise((resolve) => {
-    const video = document.createElement(
-      "video",
-    );
+    const video = document.createElement("video");
 
-    const objectUrl =
-      URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(file);
 
     video.preload = "metadata";
 
@@ -165,6 +83,15 @@ export function SubmitAction() {
   const [successPoints, setSuccessPoints] =
     useState<number | null>(null);
 
+  const [actionOptions, setActionOptions] =
+    useState<CatalogoAcao[]>([]);
+
+  const [loadingCatalog, setLoadingCatalog] =
+    useState(true);
+
+  const [catalogError, setCatalogError] =
+    useState<string | null>(null);
+
   const { addAction } = useAuth();
 
   const navigate = useNavigate();
@@ -180,57 +107,68 @@ export function SubmitAction() {
     watch,
   } = useForm<FormData>();
 
-  const selectedActionId =
-    watch("action");
+  useEffect(() => {
+    async function carregarCatalogo() {
+      try {
+        setLoadingCatalog(true);
+        setCatalogError(null);
 
-  const selectedAction =
-    actionOptions.find(
-      (action) =>
-        action.id ===
-        selectedActionId,
-    );
+        const dados = await buscarCatalogoAcoes();
 
-  const proofRegister = register(
-    "proof",
-    {
-      required:
-        "Envie uma foto ou um vídeo.",
-      validate: validateProof,
-    },
+        setActionOptions(dados);
+      } catch (error) {
+        setCatalogError(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível carregar o catálogo de ações.",
+        );
+      } finally {
+        setLoadingCatalog(false);
+      }
+    }
+
+    void carregarCatalogo();
+  }, []);
+
+  const selectedActionId = watch("action");
+
+  const selectedAction = actionOptions.find(
+    (action) => action.codigo === selectedActionId,
   );
 
-  const submit:
-    SubmitHandler<FormData> =
-    async (data) => {
-      const action =
-        actionOptions.find(
-          (item) =>
-            item.id === data.action,
-        );
+  const proofRegister = register("proof", {
+    required: "Envie uma foto ou um vídeo.",
+    validate: validateProof,
+  });
 
-      if (!action) {
-        return;
-      }
+  const submit: SubmitHandler<FormData> = async (data) => {
+    const action = actionOptions.find(
+      (item) => item.codigo === data.action,
+    );
 
-      addAction(
-        action.points,
-        action.category,
-      );
+    if (!action) {
+      return;
+    }
 
-      setSuccessPoints(
-        action.points,
-      );
+    // Comportamento local temporário.
+    // O envio real ao back-end será implementado
+    // na integração do endpoint POST de ações.
 
-      reset();
-      setSelectedFile(null);
-    };
+    addAction(
+      action.pontos,
+      action.categoria,
+    );
+
+    setSuccessPoints(action.pontos);
+
+    reset();
+    setSelectedFile(null);
+  };
 
   function handleFileChange(
     event: ChangeEvent<HTMLInputElement>,
   ) {
-    const file =
-      event.target.files?.[0] ??
-      null;
+    const file = event.target.files?.[0] ?? null;
 
     setSelectedFile(file);
 
@@ -260,26 +198,32 @@ export function SubmitAction() {
             <select
               id="action"
               {...register("action", {
-                required:
-                  "Selecione uma ação.",
+                required: "Selecione uma ação.",
               })}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-[#0c0c0e] px-4 py-3 text-sm text-white outline-none focus:border-lime-400/50"
+              disabled={loadingCatalog || !!catalogError}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-[#0c0c0e] px-4 py-3 text-sm text-white outline-none focus:border-lime-400/50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <option value="">
-                Selecione uma ação
+                {loadingCatalog
+                  ? "Carregando ações..."
+                  : "Selecione uma ação"}
               </option>
 
-              {actionOptions.map(
-                (action) => (
-                  <option
-                    key={action.id}
-                    value={action.id}
-                  >
-                    {action.label} — +{action.points} pontos
-                  </option>
-                ),
-              )}
+              {actionOptions.map((action) => (
+                <option
+                  key={action.id}
+                  value={action.codigo}
+                >
+                  {action.rotulo} — +{action.pontos} pontos
+                </option>
+              ))}
             </select>
+
+            {catalogError && (
+              <p className="mt-2 text-xs text-red-400">
+                {catalogError}
+              </p>
+            )}
 
             {errors.action && (
               <p className="mt-1 text-xs text-red-400">
@@ -294,11 +238,11 @@ export function SubmitAction() {
                 </p>
 
                 <p className="mt-1 text-sm font-semibold text-zinc-300">
-                  {selectedAction.category}
+                  {selectedAction.categoria}
                 </p>
 
                 <p className="mt-2 text-sm font-bold text-lime-400">
-                  +{selectedAction.points} pontos
+                  +{selectedAction.pontos} pontos
                 </p>
               </div>
             )}
@@ -316,32 +260,23 @@ export function SubmitAction() {
               id="description"
               rows={5}
               placeholder="Conte como foi sua ação..."
-              {...register(
-                "description",
-                {
-                  required:
-                    "Descreva a ação.",
-                  minLength: {
-                    value: 10,
-                    message:
-                      "Digite pelo menos 10 caracteres.",
-                  },
-                  maxLength: {
-                    value: 180,
-                    message:
-                      "Máximo de 180 caracteres.",
-                  },
+              {...register("description", {
+                required: "Descreva a ação.",
+                minLength: {
+                  value: 10,
+                  message: "Digite pelo menos 10 caracteres.",
                 },
-              )}
+                maxLength: {
+                  value: 180,
+                  message: "Máximo de 180 caracteres.",
+                },
+              })}
               className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-[#0c0c0e] px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-lime-400/50"
             />
 
             {errors.description && (
               <p className="mt-1 text-xs text-red-400">
-                {
-                  errors.description
-                    .message
-                }
+                {errors.description.message}
               </p>
             )}
           </div>
@@ -388,9 +323,7 @@ export function SubmitAction() {
                 accept="image/*,video/*"
                 className="sr-only"
                 {...proofRegister}
-                onChange={
-                  handleFileChange
-                }
+                onChange={handleFileChange}
               />
             </label>
 
@@ -411,7 +344,12 @@ export function SubmitAction() {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting ||
+                loadingCatalog ||
+                !!catalogError ||
+                actionOptions.length === 0
+              }
               className="rounded-lg bg-lime-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-lime-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting
@@ -443,9 +381,7 @@ export function SubmitAction() {
 
               <button
                 type="button"
-                onClick={() =>
-                  navigate("/ecorank")
-                }
+                onClick={() => navigate("/ecorank")}
                 className="mt-4 rounded-lg bg-lime-400 px-4 py-2.5 text-sm font-bold text-zinc-950 transition hover:bg-lime-300"
               >
                 Ver meu EcoRank
