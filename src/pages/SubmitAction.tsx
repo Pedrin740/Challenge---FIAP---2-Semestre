@@ -6,6 +6,7 @@ import { EcoRankHeader } from "../components/EcoRankHeader";
 import { Icon } from "../components/Icons";
 import { buscarCatalogoAcoes, type CatalogoAcao, } from "../services/publicApi";
 import { buscarMinhasAcoes, enviarAcao, type AcaoUsuario, type ResultadoEnvioAcao, } from "../services/userApi";
+import { ComprovanteLink } from "../components/ComprovanteLink";
 
 type FormData = {
   action: string;
@@ -470,15 +471,9 @@ export function SubmitAction() {
                 </div>
 
                 {acao.linkEvidencia && (
-                  <a
-                    href={acao.linkEvidencia}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-block text-xs font-semibold text-purple-300 hover:text-purple-200"
-                  >
-                    Ver comprovante
-                  </a>
+                  <ComprovanteLink arquivo={acao.linkEvidencia} />
                 )}
+
               </article>
             ))}
           </div>
