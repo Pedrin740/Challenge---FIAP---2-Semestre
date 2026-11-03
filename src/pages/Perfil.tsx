@@ -1,24 +1,79 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Link,
   Navigate,
 } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
+import {
+  buscarResumoEcoRank,
+  type ResumoEcoRankApi,
+} from "../services/ecoRankApi";
 
 export function Perfil() {
   const {
     user,
     logout,
     updateProfile,
+    isLoading,
   } = useAuth();
 
   const [editando, setEditando] = useState(false);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [carregandoResumo, setCarregandoResumo] = useState(true);
   const [mensagem, setMensagem] = useState("");
+  const [resumo, setResumo] = useState<ResumoEcoRankApi | null>(null);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarResumo() {
+      const token = localStorage.getItem("ecorank_token");
+
+      if (!token) {
+        if (ativo) {
+          setCarregandoResumo(false);
+        }
+        return;
+      }
+
+      try {
+        const dados = await buscarResumoEcoRank(token);
+
+        if (ativo) {
+          setResumo(dados);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do perfil:", error);
+
+        if (ativo) {
+          setMensagem("Não foi possível atualizar os indicadores do perfil.");
+        }
+      } finally {
+        if (ativo) {
+          setCarregandoResumo(false);
+        }
+      }
+    }
+
+    void carregarResumo();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <p className="text-sm text-zinc-400">
+          Carregando sua conta...
+        </p>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -30,7 +85,6 @@ export function Perfil() {
   }
 
   const usuario = user;
-  const ecoRank = usuario.ecoRank;
 
   function iniciarEdicao() {
     setNome(usuario.name);
@@ -63,6 +117,16 @@ export function Perfil() {
       );
     }
   }
+
+  const pontos = resumo?.pontos ?? usuario.ecoRank.points;
+  const nivel = resumo?.nivel ?? usuario.ecoRank.rank;
+  const acoes = resumo?.acoes ?? usuario.ecoRank.actions;
+  const posicao = resumo?.posicao
+    ? `${resumo.posicao}º`
+    : usuario.ecoRank.ranking;
+  const co2 = resumo
+    ? `${resumo.co2Kg.toLocaleString("pt-BR")} kg`
+    : usuario.ecoRank.co2;
 
   return (
     <div className="mx-auto max-w-[1000px] p-4 pb-24 sm:p-6 lg:p-8">
@@ -130,9 +194,7 @@ export function Perfil() {
                 id="nome"
                 type="text"
                 value={nome}
-                onChange={(event) =>
-                  setNome(event.target.value)
-                }
+                onChange={(event) => setNome(event.target.value)}
                 maxLength={100}
                 required
                 className="w-full rounded-xl border border-white/10 bg-[#1b1b1e] px-4 py-3 text-white outline-none focus:border-lime-400"
@@ -151,9 +213,7 @@ export function Perfil() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
+                onChange={(event) => setEmail(event.target.value)}
                 maxLength={100}
                 required
                 className="w-full rounded-xl border border-white/10 bg-[#1b1b1e] px-4 py-3 text-white outline-none focus:border-lime-400"
@@ -203,7 +263,7 @@ export function Perfil() {
           </p>
 
           <p className="mt-2 text-3xl font-bold">
-            {ecoRank.points.toLocaleString("pt-BR")}
+            {carregandoResumo ? "..." : pontos.toLocaleString("pt-BR")}
           </p>
         </div>
 
@@ -213,7 +273,7 @@ export function Perfil() {
           </p>
 
           <p className="mt-2 text-3xl font-bold text-lime-400">
-            {ecoRank.rank}
+            {carregandoResumo ? "..." : nivel}
           </p>
         </div>
 
@@ -223,7 +283,7 @@ export function Perfil() {
           </p>
 
           <p className="mt-2 text-3xl font-bold">
-            {ecoRank.actions}
+            {carregandoResumo ? "..." : acoes}
           </p>
         </div>
 
@@ -233,9 +293,19 @@ export function Perfil() {
           </p>
 
           <p className="mt-2 text-3xl font-bold text-lime-400">
-            {ecoRank.ranking}
+            {carregandoResumo ? "..." : posicao}
           </p>
         </div>
+      </section>
+
+      <section className="mt-5 rounded-2xl border border-white/10 bg-[#121214] p-5">
+        <p className="text-sm text-zinc-500">
+          CO₂ evitado
+        </p>
+
+        <p className="mt-2 text-2xl font-bold text-lime-400">
+          {carregandoResumo ? "..." : co2}
+        </p>
       </section>
 
       <section className="mt-5 rounded-3xl border border-white/10 bg-[#121214] p-6">
