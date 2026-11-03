@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Link,
   Navigate,
@@ -9,7 +10,14 @@ export function Perfil() {
   const {
     user,
     logout,
+    updateProfile,
   } = useAuth();
+
+  const [editando, setEditando] = useState(false);
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [carregando, setCarregando] = useState(false);
+  const [mensagem, setMensagem] = useState("");
 
   if (!user) {
     return (
@@ -20,8 +28,39 @@ export function Perfil() {
     );
   }
 
-  const ecoRank =
-    user.ecoRank;
+  const ecoRank = user.ecoRank;
+
+  function iniciarEdicao() {
+    setNome(user.name);
+    setEmail(user.email);
+    setMensagem("");
+    setEditando(true);
+  }
+
+  async function salvarAlteracoes(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    setMensagem("");
+    setCarregando(true);
+
+    const sucesso = await updateProfile({
+      nome,
+      email,
+    });
+
+    setCarregando(false);
+
+    if (sucesso) {
+      setEditando(false);
+      setMensagem("Dados atualizados com sucesso!");
+    } else {
+      setMensagem(
+        "Não foi possível atualizar seus dados. Verifique as informações e tente novamente.",
+      );
+    }
+  }
 
   return (
     <div className="mx-auto max-w-[1000px] p-4 pb-24 sm:p-6 lg:p-8">
@@ -47,15 +86,113 @@ export function Perfil() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={logout}
-            className="rounded-xl border border-red-500/20 px-5 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10"
-          >
-            Sair da conta
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={iniciarEdicao}
+              className="rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/[.04] hover:text-white"
+            >
+              Editar perfil
+            </button>
+
+            <button
+              type="button"
+              onClick={logout}
+              className="rounded-xl border border-red-500/20 px-5 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/10"
+            >
+              Sair da conta
+            </button>
+          </div>
         </div>
       </section>
+
+      {editando && (
+        <section className="mt-5 rounded-3xl border border-white/10 bg-[#121214] p-6">
+          <h2 className="text-xl font-bold">
+            Editar meus dados
+          </h2>
+
+          <form
+            onSubmit={salvarAlteracoes}
+            className="mt-5 space-y-4"
+          >
+            <div>
+              <label
+                htmlFor="nome"
+                className="mb-2 block text-sm text-zinc-400"
+              >
+                Nome
+              </label>
+
+              <input
+                id="nome"
+                type="text"
+                value={nome}
+                onChange={(event) =>
+                  setNome(event.target.value)
+                }
+                maxLength={100}
+                required
+                className="w-full rounded-xl border border-white/10 bg-[#1b1b1e] px-4 py-3 text-white outline-none focus:border-lime-400"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm text-zinc-400"
+              >
+                E-mail
+              </label>
+
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(event) =>
+                  setEmail(event.target.value)
+                }
+                maxLength={100}
+                required
+                className="w-full rounded-xl border border-white/10 bg-[#1b1b1e] px-4 py-3 text-white outline-none focus:border-lime-400"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="submit"
+                disabled={carregando}
+                className="rounded-xl bg-lime-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-lime-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {carregando
+                  ? "Salvando..."
+                  : "Salvar alterações"}
+              </button>
+
+              <button
+                type="button"
+                disabled={carregando}
+                onClick={() => {
+                  setEditando(false);
+                  setMensagem("");
+                }}
+                className="rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/[.04]"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </section>
+      )}
+
+      {mensagem && (
+        <p
+          role="status"
+          className="mt-4 text-sm text-lime-400"
+        >
+          {mensagem}
+        </p>
+      )}
 
       <section className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-white/10 bg-[#121214] p-5">
@@ -64,9 +201,7 @@ export function Perfil() {
           </p>
 
           <p className="mt-2 text-3xl font-bold">
-            {ecoRank.points.toLocaleString(
-              "pt-BR",
-            )}
+            {ecoRank.points.toLocaleString("pt-BR")}
           </p>
         </div>
 

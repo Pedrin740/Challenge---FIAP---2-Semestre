@@ -1,5 +1,20 @@
-import { createContext, useContext, useEffect, useState, type ReactNode, } from "react";
-import { cadastrarUsuario, realizarLogin, realizarLogout, buscarUsuarioAutenticado, type UsuarioAutenticado, } from "../services/auth";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+
+import {
+  cadastrarUsuario,
+  realizarLogin,
+  realizarLogout,
+  buscarUsuarioAutenticado,
+  atualizarUsuario,
+  type UsuarioAutenticado,
+  type AtualizarUsuarioDados,
+} from "../services/auth";
 
 export type Rank =
   | "Bronze"
@@ -54,6 +69,7 @@ type AuthContextData = {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  updateProfile: (dados: AtualizarUsuarioDados) => Promise<boolean>;
   addAction: (points: number, category: string) => void;
   getRanking: () => AuthUser[];
 };
@@ -522,6 +538,58 @@ export function AuthProvider({
     }
   }
 
+  async function updateProfile(
+    dados: AtualizarUsuarioDados,
+  ): Promise<boolean> {
+    if (!user || !token) {
+      return false;
+    }
+
+    try {
+      const usuarioAtualizado = await atualizarUsuario(
+        token,
+        {
+          id: user.id,
+          nome: user.name,
+          email: user.email,
+          pontos: user.ecoRank.points,
+          nivel: user.ecoRank.rank,
+          recompensa: "",
+        },
+        {
+          nome: dados.nome.trim(),
+          email: dados.email.trim().toLowerCase(),
+        },
+      );
+
+      const usuarioMapeado: AuthUser = {
+        ...user,
+        name: usuarioAtualizado.nome,
+        email: usuarioAtualizado.email,
+        ecoRank: {
+          ...user.ecoRank,
+          points: usuarioAtualizado.pontos,
+          rank: usuarioAtualizado.nivel as Rank,
+        },
+      };
+
+      setUser(usuarioMapeado);
+
+      setUsers((atuais) =>
+        atuais.map((item) =>
+          item.id === usuarioMapeado.id
+            ? usuarioMapeado
+            : item,
+        ),
+      );
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      return false;
+    }
+  }
+
   async function logout(): Promise<void> {
     const tokenAtual = token;
 
@@ -601,6 +669,7 @@ export function AuthProvider({
         login,
         register,
         logout,
+        updateProfile,
         addAction,
         getRanking,
       }}

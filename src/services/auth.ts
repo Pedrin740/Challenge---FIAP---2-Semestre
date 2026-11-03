@@ -1,4 +1,3 @@
-
 import { api } from "./api";
 
 export type UsuarioAutenticado = {
@@ -24,6 +23,11 @@ type CadastroDados = {
 type LoginDados = {
   email: string;
   senha: string;
+};
+
+export type AtualizarUsuarioDados = {
+  nome: string;
+  email: string;
 };
 
 export async function cadastrarUsuario(
@@ -69,6 +73,28 @@ export async function buscarUsuarioAutenticado(
     "/api/v1/usuarios/me",
     {
       token,
+    },
+  );
+}
+
+export async function atualizarUsuario(
+  token: string,
+  usuario: UsuarioAutenticado,
+  dados: AtualizarUsuarioDados,
+): Promise<UsuarioAutenticado> {
+  return api<UsuarioAutenticado>(
+    `/api/v1/usuarios/${usuario.id}`,
+    {
+      method: "PUT",
+      token,
+      body: {
+        id: usuario.id,
+        nome: dados.nome,
+        email: dados.email,
+        pontos: usuario.pontos,
+        nivel: usuario.nivel,
+        recompensa: usuario.recompensa,
+      },
     },
   );
 }
