@@ -1,165 +1,200 @@
-import { api } from "./api";
+import { useEffect, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
 
-// ==============================
-// TIPOS
-// ==============================
+import { useAuth } from "../context/AuthContext";
 
-export type AcaoUsuario = {
-  id: number;
-  idUsuario: number;
-  categoria: string;
-  descricao: string;
-  linkEvidencia: string;
-  status: string;
-  pontos: number;
-  data: string;
-};
+import { EcoRankHeader } from "../components/EcoRankHeader";
+import { Icon } from "../components/Icons";
 
-export type ResultadoEnvioAcao = {
-  idAcao: number;
-  status: string;
-  pontosGanhos: number;
-  bonus: number;
-  pontosTotais: number;
-  nivel: string;
-};
+import {
+  buscarMeusDesafios,
+  participarDesafio,
+  type DesafioUsuario,
+} from "../services/userApi";
 
-export type DesafioUsuario = {
-  id: number;
-  titulo: string;
-  descricao: string;
-  recompensa: number;
-  categoria: string;
-  metaAcoes: number;
-  participando: boolean;
-  concluido: boolean;
-  acoesRealizadas: number;
-  progresso: number;
-};
+export function Challenges() {
+  const { user, isLoading } = useAuth();
 
-export type ObjetivoUsuario = {
-  id: number;
-  titulo: string;
-  descricao: string;
-  meta: number;
-  progresso: number;
-};
+  const [desafios, setDesafios] = useState<DesafioUsuario[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [participandoId, setParticipandoId] = useState<number | null>(null);
+  const [erro, setErro] = useState("");
 
-export type DadosObjetivo = {
-  titulo: string;
-  descricao: string;
-  meta: number;
-  progresso: number;
-};
+  useEffect(() => {
+    let ativo = true;
 
-// ==============================
-// AÇÕES DO USUÁRIO
-// ==============================
+    async function carregarDesafios() {
+      const token = localStorage.getItem("ecorank_token");
 
-export function buscarMinhasAcoes(token: string) {
-  return api<AcaoUsuario[]>(
-    "/api/v1/acoes/me",
-    { token },
-  );
-}
+      if (!token) {
+        if (ativo) {
+          setCarregando(false);
+        }
+        return;
+      }
 
-export function enviarAcao(
-  token: string,
-  dados: {
-    codigo: string;
-    descricao: string;
-    arquivo: File;
-  },
-) {
-  const formulario = new FormData();
+      try {
+        const dados = await buscarMeusDesafios(token);
 
-  formulario.append("codigo", dados.codigo);
-  formulario.append("descricao", dados.descricao);
-  formulario.append("arquivo", dados.arquivo);
+        if (ativo) {
+          setDesafios(dados);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar desafios:", error);
 
-  return api<ResultadoEnvioAcao>(
-    "/api/v1/acoes/enviar",
-    {
-      method: "POST",
-      token,
-      body: formulario,
-    },
-  );
-}
+        if (ativo) {
+          setErro("Não foi possível carregar seus desafios.");
+        }
+      } finally {
+        if (ativo) {
+          setCarregando(false);
+        }
+      }
+    }
 
-// ==============================
-// DESAFIOS DO USUÁRIO
-// ==============================
+    void carregarDesafios();
 
-export function buscarMeusDesafios(token: string) {
-  return api<DesafioUsuario[]>(
-    "/api/v1/desafios/me",
-    { token },
-  );
-}
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
-export function participarDesafio(
-  token: string,
-  id: number,
-) {
-  return api<DesafioUsuario[]>(
-    `/api/v1/desafios/${id}/participar`,
-    {
-      method: "POST",
-      token,
-    },
-  );
-}
+  async function handleParticipar(id: number) {
+    const token = localStorage.getItem("ecorank_token");
 
-// ==============================
-// OBJETIVOS DO USUÁRIO
-// ==============================
+    if (!token) {
+      setErro("Sua sessão expirou. Entre novamente.");
+      return;
+    }
 
-export function buscarMeusObjetivos(token: string) {
-  return api<ObjetivoUsuario[]>(
-    "/api/v1/objetivos",
-    { token },
-  );
-}
+    try {
+      setErro("");
+      setParticipandoId(id);
 
-export function criarObjetivo(
-  token: string,
-  dados: DadosObjetivo,
-) {
-  return api<ObjetivoUsuario>(
-    "/api/v1/objetivos",
-    {
-      method: "POST",
-      token,
-      body: dados,
-    },
-  );
-}
+      const dadosAtualizados = await participarDesafio(token, id);
 
-export function atualizarObjetivo(
-  token: string,
-  id: number,
-  dados: DadosObjetivo,
-) {
-  return api<ObjetivoUsuario>(
-    `/api/v1/objetivos/${id}`,
-    {
-      method: "PUT",
-      token,
-      body: dados,
-    },
-  );
-}
+      setDesafios(dadosAtualizados);
+    } catch (error) {
+      console.error("Erro ao participar do desafio:", error);
+      setErro("Não foi possível participar deste desafio.");
+    } finally {
+      setParticipandoId(null);
+    }
+  }
 
-export function excluirObjetivo(
-  token: string,
-  id: number,
-) {
-  return api<void>(
-    `/api/v1/objetivos/${id}`,
-    {
-      method: "DELETE",
-      token,
-    },
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <p className="text-sm text-zinc-400">
+          Carregando sua conta...
+        </p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <div className="mx-auto max-w-[1050px] p-4 pb-24 sm:p-6 lg:p-8">
+      <EcoRankHeader
+        title="Desafios"
+        subtitle="Participe, pontue e avance no EcoRank."
+      />
+
+      {erro && (
+        <p
+          role="alert"
+          className="mt-4 rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-400"
+        >
+          {erro}
+        </p>
+      )}
+
+      {carregando ? (
+        <p className="mt-6 text-center text-sm text-zinc-500">
+          Carregando desafios...
+        </p>
+      ) : desafios.length > 0 ? (
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          {desafios.map((desafio) => (
+            <section
+              key={desafio.id}
+              className="rounded-2xl border border-white/10 bg-[#121214] p-5"
+            >
+              <div className="flex items-center gap-2 text-sm text-purple-300">
+                <Icon name="target" size={18} />
+
+                {desafio.concluido
+                  ? "Desafio concluído"
+                  : desafio.participando
+                    ? "Desafio ativo"
+                    : "Desafio disponível"}
+              </div>
+
+              <h2 className="mt-4 text-xl font-bold">
+                {desafio.titulo}
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-zinc-400">
+                {desafio.descricao}
+              </p>
+
+              <div className="mt-5 flex flex-wrap justify-between gap-2 text-xs">
+                <span className="font-bold text-lime-400">
+                  +{desafio.recompensa} pontos
+                </span>
+
+                <span className="text-zinc-500">
+                  {desafio.acoesRealizadas}/{desafio.metaAcoes} ações
+                </span>
+              </div>
+
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-lime-400 transition-all"
+                  style={{
+                    width: `${Math.max(0, Math.min(100, desafio.progresso))}%`,
+                  }}
+                />
+              </div>
+
+              <p className="mt-2 text-right text-xs text-zinc-500">
+                {desafio.progresso}% concluído
+              </p>
+
+              {desafio.concluido ? (
+                <p className="mt-5 text-sm font-semibold text-lime-400">
+                  Você concluiu este desafio!
+                </p>
+              ) : desafio.participando ? (
+                <Link
+                  to="/ecorank/enviar"
+                  className="mt-5 inline-flex rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-bold transition hover:bg-purple-500"
+                >
+                  Registrar ação
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void handleParticipar(desafio.id)}
+                  disabled={participandoId !== null}
+                  className="mt-5 inline-flex rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-bold transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {participandoId === desafio.id
+                    ? "Participando..."
+                    : "Participar"}
+                </button>
+              )}
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-6 rounded-xl border border-white/10 bg-[#121214] p-6 text-center text-sm text-zinc-500">
+          Nenhum desafio disponível no momento.
+        </p>
+      )}
+    </div>
   );
 }
