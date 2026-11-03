@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { Layout } from "./components/Layout";
+import { RotaProtegida } from "./components/RotaProtegida";
 
 import { Challenges } from "./pages/Challenges";
 import { Configuracoes } from "./pages/Configuracoes";
@@ -23,22 +24,89 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
+        {/* Páginas públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/perfil" element={<Perfil />} />
-        <Route path="/objetivos" element={<MeusObjetivos />} />
-        <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contato" element={<Contato />} />
         <Route path="/integrantes" element={<Integrantes />} />
         <Route path="/conteudos" element={<Conteudos />} />
-        <Route path="/ecorank" element={<EcoRankDashboard />} />
-        <Route path="/ecorank/ranking" element={<Ranking />} />
-        <Route path="/ecorank/desafios" element={<Challenges />} />
-        <Route path="/ecorank/enviar" element={<SubmitAction />} />
-        <Route path="/ecorank/impacto" element={<Impact />} />
+
+        {/* Páginas protegidas */}
+        <Route
+          path="/perfil"
+          element={
+            <RotaProtegida>
+              <Perfil />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/objetivos"
+          element={
+            <RotaProtegida>
+              <MeusObjetivos />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/configuracoes"
+          element={
+            <RotaProtegida>
+              <Configuracoes />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/ecorank"
+          element={
+            <RotaProtegida>
+              <EcoRankDashboard />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/ecorank/ranking"
+          element={
+            <RotaProtegida>
+              <Ranking />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/ecorank/desafios"
+          element={
+            <RotaProtegida>
+              <Challenges />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/ecorank/enviar"
+          element={
+            <RotaProtegida>
+              <SubmitAction />
+            </RotaProtegida>
+          }
+        />
+
+        <Route
+          path="/ecorank/impacto"
+          element={
+            <RotaProtegida>
+              <Impact />
+            </RotaProtegida>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
