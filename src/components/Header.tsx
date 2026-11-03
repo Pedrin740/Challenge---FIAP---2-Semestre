@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
-import { environmentalNews } from "../data/mock";
+import { buscarConteudos, type Conteudo } from "../services/publicApi";
 import { AccountMenu } from "./AccountMenu";
 import { Icon } from "./Icons";
 
@@ -154,6 +154,7 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [conteudos, setConteudos] = useState<Conteudo[]>([]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -163,6 +164,28 @@ export function Header() {
     setSearchOpen(false);
     setSearch("");
   }, [location.pathname]);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarConteudos() {
+      try {
+        const dados = await buscarConteudos();
+
+        if (ativo) {
+          setConteudos(dados);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar conteúdos para a pesquisa:", error);
+      }
+    }
+
+    void carregarConteudos();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -216,14 +239,14 @@ export function Header() {
       })
       .map((item) => item.page);
 
-    const newsResults = environmentalNews
-      .map((news) => {
+    const newsResults = conteudos
+      .map((conteudo) => {
         const searchableText = normalizeText(
           [
-            news.title,
-            news.category,
-            news.summary,
-            news.source,
+            conteudo.titulo,
+            conteudo.categoria,
+            conteudo.resumo,
+            conteudo.fonte,
           ].join(" "),
         );
 
@@ -232,22 +255,22 @@ export function Header() {
         );
 
         return {
-          news,
+          conteudo,
           score: matchedTerms.length,
         };
       })
       .filter((item) => item.score > 0)
       .sort((a, b) => b.score - a.score)
       .map((item) => ({
-        title: item.news.title,
-        description: `${item.news.category} • ${item.news.source}`,
+        title: item.conteudo.titulo,
+        description: `${item.conteudo.categoria} • ${item.conteudo.fonte}`,
         type: "Notícia" as const,
         icon: "leaf",
-        url: item.news.url,
+        url: item.conteudo.url,
       }));
 
     return [...pageResults, ...newsResults].slice(0, 10);
-  }, [search]);
+  }, [search, conteudos]);
 
   function handleSearchSubmit() {
     if (!search.trim()) {
