@@ -21,9 +21,7 @@ import {
 } from "../services/publicApi";
 
 import {
-  buscarMinhasAcoes,
   enviarAcao,
-  type AcaoUsuario,
   type ResultadoEnvioAcao,
 } from "../services/userApi";
 
@@ -91,9 +89,7 @@ export function SubmitAction() {
   const { user, isLoading } = useAuth();
 
   const [catalogo, setCatalogo] = useState<CatalogoAcao[]>([]);
-  const [acoes, setAcoes] = useState<AcaoUsuario[]>([]);
   const [carregandoCatalogo, setCarregandoCatalogo] = useState(true);
-  const [carregandoHistorico, setCarregandoHistorico] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [resultado, setResultado] = useState<ResultadoEnvioAcao | null>(null);
   const [erroApi, setErroApi] = useState("");
@@ -120,14 +116,12 @@ export function SubmitAction() {
   useEffect(() => {
     let ativo = true;
 
-    async function carregarDados() {
-      const token = localStorage.getItem("ecorank_token");
-
+    async function carregarCatalogo() {
       try {
-        const dadosCatalogo = await buscarCatalogoAcoes();
+        const dados = await buscarCatalogoAcoes();
 
         if (ativo) {
-          setCatalogo(dadosCatalogo);
+          setCatalogo(dados);
         }
       } catch (error) {
         console.error("Erro ao carregar catálogo:", error);
@@ -140,32 +134,9 @@ export function SubmitAction() {
           setCarregandoCatalogo(false);
         }
       }
-
-      if (!token) {
-        setCarregandoHistorico(false);
-        return;
-      }
-
-      try {
-        const dadosAcoes = await buscarMinhasAcoes(token);
-
-        if (ativo) {
-          setAcoes(dadosAcoes);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar histórico:", error);
-
-        if (ativo) {
-          setErroApi("Não foi possível carregar seu histórico de ações.");
-        }
-      } finally {
-        if (ativo) {
-          setCarregandoHistorico(false);
-        }
-      }
     }
 
-    void carregarDados();
+    void carregarCatalogo();
 
     return () => {
       ativo = false;
@@ -203,12 +174,9 @@ export function SubmitAction() {
       setResultado(resposta);
       reset();
       setSelectedFile(null);
-
-      const historicoAtualizado = await buscarMinhasAcoes(token);
-      setAcoes(historicoAtualizado);
     } catch (error) {
-      console.error("Erro ao enviar ou atualizar histórico:", error);
-      setErroApi("Não foi possível concluir a operação. Tente novamente.");
+      console.error("Erro ao enviar ação:", error);
+      setErroApi("Não foi possível enviar sua ação. Tente novamente.");
     }
   };
 
@@ -463,80 +431,6 @@ export function SubmitAction() {
           )}
         </div>
       </form>
-
-      <section className="mt-6 rounded-2xl border border-white/10 bg-[#121214] p-5 sm:p-7">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold">
-              Histórico de ações
-            </h2>
-
-            <p className="mt-1 text-xs text-zinc-500">
-              Consulte as ações enviadas pela sua conta.
-            </p>
-          </div>
-
-          <span className="rounded-full bg-lime-400/10 px-3 py-1 text-xs font-semibold text-lime-400">
-            {acoes.length} registros
-          </span>
-        </div>
-
-        {carregandoHistorico ? (
-          <p className="mt-5 text-sm text-zinc-500">
-            Carregando histórico...
-          </p>
-        ) : acoes.length > 0 ? (
-          <div className="mt-4 space-y-3">
-            {acoes.map((acao) => (
-              <article
-                key={acao.id}
-                className="rounded-xl border border-white/5 bg-white/[.02] p-4"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0">
-                    <h3 className="font-semibold">
-                      {acao.categoria}
-                    </h3>
-
-                    <p className="mt-1 text-sm leading-6 text-zinc-400">
-                      {acao.descricao}
-                    </p>
-
-                    <p className="mt-2 text-xs text-zinc-500">
-                      {new Date(`${acao.data}T00:00:00`).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
-
-                  <div className="shrink-0 sm:text-right">
-                    <p className="font-bold text-lime-400">
-                      +{acao.pontos} pontos
-                    </p>
-
-                    <span className="mt-2 inline-flex rounded-full bg-white/5 px-3 py-1 text-xs text-zinc-400">
-                      {acao.status}
-                    </span>
-                  </div>
-                </div>
-
-                {acao.linkEvidencia && (
-                  <a
-                    href={acao.linkEvidencia}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-block text-xs font-semibold text-purple-300 hover:text-purple-200"
-                  >
-                    Ver comprovante
-                  </a>
-                )}
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-5 rounded-xl border border-white/5 bg-white/[.02] p-5 text-center text-sm text-zinc-500">
-            Você ainda não enviou nenhuma ação.
-          </p>
-        )}
-      </section>
     </div>
   );
 }
