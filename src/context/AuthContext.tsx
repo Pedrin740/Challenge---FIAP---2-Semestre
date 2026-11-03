@@ -11,6 +11,7 @@ import {
   realizarLogin,
   realizarLogout,
   buscarUsuarioAutenticado,
+  atualizarPerfil,
   type UsuarioAutenticado,
 } from "../services/auth";
 
@@ -68,6 +69,10 @@ type AuthContextData = {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  updateProfile: (dados: {
+    nome: string;
+    email: string;
+  }) => Promise<boolean>;
   addAction: (points: number, category: string) => void;
   getRanking: () => AuthUser[];
 };
@@ -588,6 +593,53 @@ export function AuthProvider({
     }
   }
 
+  async function updateProfile(
+    dados: { nome: string; email: string },
+  ): Promise<boolean> {
+    if (!user || !token) {
+      return false;
+    }
+
+    try {
+      const usuarioAtualizado = await atualizarPerfil(token, {
+        id: user.id,
+        nome: dados.nome.trim(),
+        email: dados.email.trim().toLowerCase(),
+        pontos: user.ecoRank.points,
+        nivel: user.ecoRank.rank,
+        recompensa: "",
+      });
+
+      const rankInfo = getRankInfo(usuarioAtualizado.pontos);
+
+      const usuarioLocal: AuthUser = {
+        ...user,
+        name: usuarioAtualizado.nome,
+        email: usuarioAtualizado.email,
+        ecoRank: {
+          ...user.ecoRank,
+          points: usuarioAtualizado.pontos,
+          rank: rankInfo.rank,
+          nextRank: rankInfo.nextRank,
+          nextRankPoints: rankInfo.nextRankPoints,
+        },
+      };
+
+      setUser(usuarioLocal);
+
+      setUsers((atuais) =>
+        atuais.map((item) =>
+          item.id === usuarioLocal.id ? usuarioLocal : item,
+        ),
+      );
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      return false;
+    }
+  }
+
   function addAction(points: number, category: string) {
     if (!user) return;
 
@@ -652,6 +704,7 @@ export function AuthProvider({
         login,
         register,
         logout,
+        updateProfile,
         addAction,
         getRanking,
       }}

@@ -25,9 +25,13 @@ type LoginDados = {
   senha: string;
 };
 
-export type AtualizarUsuarioDados = {
+type AtualizarPerfilDados = {
+  id: number;
   nome: string;
   email: string;
+  pontos: number;
+  nivel: string;
+  recompensa: string;
 };
 
 export async function cadastrarUsuario(
@@ -35,10 +39,7 @@ export async function cadastrarUsuario(
 ): Promise<SessaoAutenticacao> {
   return api<SessaoAutenticacao>(
     "/api/v1/auth/cadastro",
-    {
-      method: "POST",
-      body: dados,
-    },
+    { method: "POST", body: dados },
   );
 }
 
@@ -47,22 +48,14 @@ export async function realizarLogin(
 ): Promise<SessaoAutenticacao> {
   return api<SessaoAutenticacao>(
     "/api/v1/auth/login",
-    {
-      method: "POST",
-      body: dados,
-    },
+    { method: "POST", body: dados },
   );
 }
 
-export async function realizarLogout(
-  token: string,
-): Promise<void> {
+export async function realizarLogout(token: string): Promise<void> {
   return api<void>(
     "/api/v1/auth/logout",
-    {
-      method: "POST",
-      token,
-    },
+    { method: "POST", token },
   );
 }
 
@@ -71,30 +64,20 @@ export async function buscarUsuarioAutenticado(
 ): Promise<UsuarioAutenticado> {
   return api<UsuarioAutenticado>(
     "/api/v1/usuarios/me",
-    {
-      token,
-    },
+    { token },
   );
 }
 
-export async function atualizarUsuario(
+export async function atualizarPerfil(
   token: string,
-  usuario: UsuarioAutenticado,
-  dados: AtualizarUsuarioDados,
+  dados: AtualizarPerfilDados,
 ): Promise<UsuarioAutenticado> {
   return api<UsuarioAutenticado>(
-    `/api/v1/usuarios/${usuario.id}`,
+    "/api/v1/usuarios/me",
     {
       method: "PUT",
       token,
-      body: {
-        id: usuario.id,
-        nome: dados.nome,
-        email: dados.email,
-        pontos: usuario.pontos,
-        nivel: usuario.nivel,
-        recompensa: usuario.recompensa,
-      },
+      body: dados,
     },
   );
 }
