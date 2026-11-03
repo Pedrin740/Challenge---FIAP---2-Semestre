@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Link,
@@ -28,11 +29,12 @@ export function Perfil() {
     );
   }
 
-  const ecoRank = user.ecoRank;
+  const usuario = user;
+  const ecoRank = usuario.ecoRank;
 
   function iniciarEdicao() {
-    setNome(user.name);
-    setEmail(user.email);
+    setNome(usuario.name);
+    setEmail(usuario.email);
     setMensagem("");
     setEditando(true);
   }
@@ -68,7 +70,7 @@ export function Perfil() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-200 text-2xl font-bold text-zinc-900">
-              {user.name.charAt(0)}
+              {usuario.name.charAt(0)}
             </div>
 
             <div>
@@ -77,11 +79,11 @@ export function Perfil() {
               </p>
 
               <h1 className="mt-1 text-3xl font-bold">
-                {user.name}
+                {usuario.name}
               </h1>
 
               <p className="mt-1 text-sm text-zinc-400">
-                {user.email}
+                {usuario.email}
               </p>
             </div>
           </div>
