@@ -11,9 +11,7 @@ import {
   realizarLogin,
   realizarLogout,
   buscarUsuarioAutenticado,
-  atualizarUsuario,
   type UsuarioAutenticado,
-  type AtualizarUsuarioDados,
 } from "../services/auth";
 
 export type Rank =
@@ -66,10 +64,10 @@ type AuthContextData = {
   user: AuthUser | null;
   users: AuthUser[];
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  updateProfile: (dados: AtualizarUsuarioDados) => Promise<boolean>;
   addAction: (points: number, category: string) => void;
   getRanking: () => AuthUser[];
 };
@@ -433,9 +431,15 @@ export function AuthProvider({
   children: ReactNode;
 }) {
   const [users, setUsers] = useState<AuthUser[]>(() => loadUsers());
+
   const [user, setUser] = useState<AuthUser | null>(null);
+
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem(AUTH_STORAGE_KEY),
+  );
+
+  const [isLoading, setIsLoading] = useState<boolean>(() =>
+    Boolean(localStorage.getItem(AUTH_STORAGE_KEY)),
   );
 
   useEffect(() => {
@@ -448,8 +452,11 @@ export function AuthProvider({
     async function restaurarSessao() {
       if (!token) {
         setUser(null);
+        setIsLoading(false);
         return;
       }
+
+      setIsLoading(true);
 
       try {
         const usuario = await buscarUsuarioAutenticado(token);
@@ -467,9 +474,14 @@ export function AuthProvider({
         if (!ativo) return;
 
         console.error("Não foi possível restaurar a sessão:", error);
+
         localStorage.removeItem(AUTH_STORAGE_KEY);
         setToken(null);
         setUser(null);
+      } finally {
+        if (ativo) {
+          setIsLoading(false);
+        }
       }
     }
 
@@ -538,64 +550,13 @@ export function AuthProvider({
     }
   }
 
-  async function updateProfile(
-    dados: AtualizarUsuarioDados,
-  ): Promise<boolean> {
-    if (!user || !token) {
-      return false;
-    }
-
-    try {
-      const usuarioAtualizado = await atualizarUsuario(
-        token,
-        {
-          id: user.id,
-          nome: user.name,
-          email: user.email,
-          pontos: user.ecoRank.points,
-          nivel: user.ecoRank.rank,
-          recompensa: "",
-        },
-        {
-          nome: dados.nome.trim(),
-          email: dados.email.trim().toLowerCase(),
-        },
-      );
-
-      const usuarioMapeado: AuthUser = {
-        ...user,
-        name: usuarioAtualizado.nome,
-        email: usuarioAtualizado.email,
-        ecoRank: {
-          ...user.ecoRank,
-          points: usuarioAtualizado.pontos,
-          rank: usuarioAtualizado.nivel as Rank,
-        },
-      };
-
-      setUser(usuarioMapeado);
-
-      setUsers((atuais) =>
-        atuais.map((item) =>
-          item.id === usuarioMapeado.id
-            ? usuarioMapeado
-            : item,
-        ),
-      );
-
-      return true;
-    } catch (error) {
-      console.error("Erro ao atualizar perfil:", error);
-      return false;
-    }
-  }
-
   async function logout(): Promise<void> {
     const tokenAtual = token;
 
     localStorage.removeItem(AUTH_STORAGE_KEY);
     setToken(null);
     setUser(null);
+    setIsLoading(false);
 
     if (tokenAtual) {
       try {
@@ -666,10 +627,10 @@ export function AuthProvider({
         user,
         users,
         isAuthenticated: Boolean(user),
+        isLoading,
         login,
         register,
         logout,
-        updateProfile,
         addAction,
         getRanking,
       }}
