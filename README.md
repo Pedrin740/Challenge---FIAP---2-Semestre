@@ -210,7 +210,7 @@ O projeto está disponível publicamente por meio do GitHub e do Vercel.
 
 **Vídeo de apresentação do projeto no YouTube:**
 
-Link do YouTube: 
+[https://youtu.be/HIHY-0vwK_0](https://youtu.be/HIHY-0vwK_0)
 
 ---
 
