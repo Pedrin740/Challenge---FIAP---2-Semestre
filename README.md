@@ -27,6 +27,14 @@ As seguintes tecnologias e ferramentas foram utilizadas no desenvolvimento do pr
 
 ---
 
+## 🌐 API utilizada no projeto
+
+**URL:**
+
+[https://back-end-challenge-yxlu.onrender.com](https://back-end-challenge-yxlu.onrender.com)
+
+---
+
 ## 📂 Estrutura de pastas do projeto
 
 Abaixo está a organização dos principais arquivos e diretórios do projeto:
@@ -148,43 +156,43 @@ O projeto foi desenvolvido pelos seguintes integrantes:
 
 A imagem abaixo mostra onde o usuário pode acessar o EcoRank e visualizar informações sobre suas ações sustentáveis e sua colocação no ranking. Além disso, o usuário pode registrar suas ações sustentáveis acessando a opção correspondente na página.
 
-![alt text]\(image.png)
+![alt text](image.png)
 
 ### Sistema de login e cadastro
 
 A imagem abaixo demonstra o sistema de autenticação do site, no qual o usuário pode criar uma conta, realizar login ou acessar uma conta disponibilizada para testes.
 
-![alt text]\(image-1.png)
+![alt text](image-1.png)
 
 ### Personalização de temas
 
 Após realizar o login, o usuário também pode escolher o tema visual do site de acordo com sua preferência: claro, intermediário ou escuro.
 
-![alt text]\(image-2.png) ![alt text]\(image-3.png) ![alt text]\(image-4.png)
+![alt text](image-2.png) ![alt text](image-3.png) ![alt text](image-4.png)
 
 ### Desafios sustentáveis
 
 Também adicionamos desafios previamente definidos em nossa solução, além da possibilidade de criação de desafios privados pelos usuários. Essa funcionalidade foi uma das recomendações recebidas durante a mentoria da SoulUp.
 
-![alt text]\(image-5.png) ![alt text]\(image-6.png)
+![alt text](image-5.png) ![alt text](image-6.png)
 
 ### Conteúdos e notícias ambientais
 
 Neste projeto, também desenvolvemos uma aba de conteúdos e notícias relacionadas ao meio ambiente, com o objetivo de inspirar os usuários a praticarem ações sustentáveis.
 
-![alt text]\(image-7.png)
+![alt text](image-7.png)
 
 ### Barra de pesquisa
 
 Além das funcionalidades anteriores, o site também conta com uma barra de busca e pesquisa para facilitar a localização de conteúdos e informações pelos usuários.
 
-![alt text]\(image-8.png)
+![alt text](image-8.png)
 
 ### Responsividade
 
 Utilizando recursos de responsividade, também desenvolvemos uma interface adaptada para dispositivos móveis, com uma experiência visual semelhante à de um aplicativo.
 
-![alt text]\(image-9.png)
+![alt text](image-9.png)
 
 ---
 
