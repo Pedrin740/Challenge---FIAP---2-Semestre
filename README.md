@@ -1,225 +1,217 @@
 # Challenge - Front-end - FIAP
 
-## Título e descrição do projeto 📌
+## 📌 Título e descrição do projeto
 
-Nome do Projeto: EcoRank + SoulUp
+**Nome do Projeto:** EcoRank + SoulUp
 
-Objetivo do Projeto: Desenvolver o EcoRank como uma funcionalidade integrada à plataforma SoulUp, incentivando ações sustentáveis por meio de pontuação, validação das ações, evolução de níveis e ranking entre usuários.
+**Objetivo do Projeto:**
 
-# OBSERVAÇÃO!!
+Desenvolver o EcoRank como uma funcionalidade integrada à plataforma SoulUp, incentivando ações sustentáveis por meio de pontuação, validação das ações, evolução de níveis e ranking entre usuários.
 
-As imagens que estão FORA da pasta PUBLIC\IMAGES são as imagens que adicionamos NESTE ARQUIVO README.md, portanto elas não fazem parte do site/projeto e por isso estão fora da pasta.
+### ⚠️ Observação
 
-## Tecnologias Utilizadas 💻
+As imagens que estão **fora da pasta `public/images`** são imagens adicionadas exclusivamente neste arquivo `README.md`. Portanto, elas não fazem parte dos arquivos utilizados diretamente pelo site e, por esse motivo, estão armazenadas fora da pasta `public/images`.
 
-    1 - React
+---
 
-    2 - Vite
+## 💻 Tecnologias utilizadas
 
-    3 - TypeScript
+As seguintes tecnologias e ferramentas foram utilizadas no desenvolvimento do projeto:
 
-    4 - Tailwind CSS
+1. React
+2. Vite
+3. TypeScript
+4. Tailwind CSS
+5. React Router DOM
+6. React Hook Form
 
-    5 - React Router DOM
+---
 
-    6 - React Hook Form
+## 📂 Estrutura de pastas do projeto
 
-## Estrutura de Pastas do Projeto 📂
+Abaixo está a organização dos principais arquivos e diretórios do projeto:
 
+```text
 📁 EcoRank-SoulUp-React-Vite-TS-ADAPTADO-COMPLETO
-
 │
-
-├📄 index.html → Arquivo principal de entrada da aplicação
-
-├📄 package.json → Dependências, scripts e configurações do projeto
-
-├📄 package-lock.json → Controle das versões das dependências instaladas
-
-├📄 postcss.config.js → Configuração do PostCSS utilizado pelo Tailwind CSS
-
-├📄 vite.config.ts → Configuração do Vite
-
-├📄 tsconfig.json → Configuração principal do TypeScript
-
-├📄 tsconfig.app.json → Configurações do TypeScript para a aplicação
-
-├📄 tsconfig.node.json → Configurações do TypeScript para arquivos executados no Node.js
-
-├📄 .gitignore → Arquivos e pastas ignorados pelo Git
-
-├📄 README.md → Documentação do projeto
-
+├── 📄 index.html → Arquivo principal de entrada da aplicação
+├── 📄 package.json → Dependências, scripts e configurações do projeto
+├── 📄 package-lock.json → Controle das versões das dependências instaladas
+├── 📄 postcss.config.js → Configuração do PostCSS utilizado pelo Tailwind CSS
+├── 📄 vite.config.ts → Configuração do Vite
+├── 📄 tsconfig.json → Configuração principal do TypeScript
+├── 📄 tsconfig.app.json → Configurações do TypeScript para a aplicação
+├── 📄 tsconfig.node.json → Configurações do TypeScript para arquivos executados no Node.js
+├── 📄 .gitignore → Arquivos e pastas ignorados pelo Git
+├── 📄 README.md → Documentação do projeto
 │
-
 ├── 📁 public/
-
 │   └── 📁 images/
-
-│       ├📄 guilherme.jpeg → Foto do integrante Guilherme Joel de Camargo
-
-│       ├📄 pedro-felipe.jpeg → Foto do integrante Pedro Felipe de Castro Rosa
-
-│       ├📄 pedro-henrique.jpeg → Foto do integrante Pedro Henrique Cavalcante De Souza
-
-│       ├📄 rafaela.jpeg → Foto da integrante Rafaela Donadio Figueiredo Tavares
-
-│       ├📄 victor.jpeg → Foto do integrante Victor Ferreira Gomes
-
-│       ├📄 imagem-de-contato.png → Imagem utilizada na página de contato
-
-│       ├📄 ranque-do-projeto.png → Representação visual da evolução dos ranques do EcoRank
-
-│       └📄 tecnologias-utilizadas.png → Representação das tecnologias utilizadas no projeto
-
+│       ├── 📄 guilherme.jpeg → Foto do integrante Guilherme Joel de Camargo
+│       ├── 📄 pedro-felipe.jpeg → Foto do integrante Pedro Felipe de Castro Rosa
+│       ├── 📄 pedro-henrique.jpeg → Foto do integrante Pedro Henrique Cavalcante De Souza
+│       ├── 📄 rafaela.jpeg → Foto da integrante Rafaela Donadio Figueiredo Tavares
+│       ├── 📄 victor.jpeg → Foto do integrante Victor Ferreira Gomes
+│       ├── 📄 imagem-de-contato.png → Imagem utilizada na página de contato
+│       ├── 📄 ranque-do-projeto.png → Representação visual da evolução dos ranques do EcoRank
+│       └── 📄 tecnologias-utilizadas.png → Representação das tecnologias utilizadas no projeto
 │
+└── 📁 src/
+    │
+    ├── 📄 App.tsx → Configuração das rotas e páginas da aplicação
+    ├── 📄 main.tsx → Ponto de entrada da aplicação React
+    ├── 📄 index.css → Importação e configuração base do Tailwind CSS
+    │
+    ├── 📁 components/
+    │   ├── 📄 AccountMenu.tsx → Menu da conta do usuário
+    │   ├── 📄 BottomNav.tsx → Barra de navegação inferior para dispositivos móveis
+    │   ├── 📄 CategoryChart.tsx → Gráfico de ações sustentáveis por categoria
+    │   ├── 📄 ChallengeCard.tsx → Card de desafios sustentáveis
+    │   ├── 📄 EcoRankHeader.tsx → Cabeçalho das páginas do EcoRank
+    │   ├── 📄 Header.tsx → Cabeçalho principal da plataforma
+    │   ├── 📄 Icons.tsx → Componentes e ícones utilizados na aplicação
+    │   ├── 📄 ImpactChart.tsx → Gráfico de evolução do impacto e pontuação
+    │   ├── 📄 Layout.tsx → Estrutura principal de layout da aplicação
+    │   ├── 📄 LevelCard.tsx → Card de nível/ranque do usuário
+    │   ├── 📄 QuickActions.tsx → Cards de ações rápidas
+    │   ├── 📄 RankingCard.tsx → Card de ranking dos usuários
+    │   ├── 📄 Sidebar.tsx → Menu lateral de navegação
+    │   └── 📄 StatCard.tsx → Cards de indicadores e estatísticas
+    │
+    ├── 📁 context/
+    │   ├── 📄 AuthContext.tsx → Gerenciamento de autenticação e dados dos usuários
+    │   └── 📄 ThemeContext.tsx → Gerenciamento dos temas da aplicação
+    │
+    ├── 📁 data/
+    │   └── 📄 mock.ts → Dados utilizados para demonstração do protótipo
+    │
+    └── 📁 pages/
+        ├── 📄 Cadastro.tsx → Página de cadastro de usuários
+        ├── 📄 Challenges.tsx → Página de desafios sustentáveis
+        ├── 📄 Configuracoes.tsx → Página de configurações
+        ├── 📄 Contato.tsx → Página de contato
+        ├── 📄 Conteudos.tsx → Página de conteúdos e artigos
+        ├── 📄 EcoRankDashboard.tsx → Dashboard principal do EcoRank
+        ├── 📄 FAQ.tsx → Página de perguntas frequentes
+        ├── 📄 Home.tsx → Página inicial da plataforma
+        ├── 📄 Impact.tsx → Página de acompanhamento do impacto sustentável
+        ├── 📄 Integrantes.tsx → Página com os integrantes da equipe
+        ├── 📄 Login.tsx → Página de login
+        ├── 📄 MeusObjetivos.tsx → Página de objetivos sustentáveis do usuário
+        ├── 📄 Perfil.tsx → Página de perfil do usuário
+        ├── 📄 Ranking.tsx → Página de ranking dos usuários
+        ├── 📄 Sobre.tsx → Página com informações sobre o projeto
+        └── 📄 SubmitAction.tsx → Página para envio e registro de ações sustentáveis
+```
 
-├── 📁 src/
+---
 
-│   │
+## 👥 Autores e créditos
 
-│   ├📄 App.tsx → Configuração das rotas e páginas da aplicação
+O projeto foi desenvolvido pelos seguintes integrantes:
 
-│   ├📄 main.tsx → Ponto de entrada da aplicação React
+### 1. Guilherme Joel de Camargo
+- **RM:** 570403
+- **Turma:** 1TDSPK
+- **GitHub:** [guilhermejcam](https://github.com/guilhermejcam)
+- **LinkedIn:** [Guilherme Camargo](https://www.linkedin.com/in/guilherme-camargo-a06410410/)
 
-│   ├📄 index.css → Importação e configuração base do Tailwind CSS
+### 2. Pedro Felipe de Castro Rosa
+- **RM:** 569049
+- **Turma:** 1TDSPK
+- **GitHub:** [Pedrin740](https://github.com/Pedrin740)
+- **LinkedIn:** [Pedro Felipe de Castro Rosa](https://www.linkedin.com/in/pedro-felipe-castro-rosa/)
 
-│   │
+### 3. Pedro Henrique Cardoso Cavalcante De Souza
+- **RM:** 570464
+- **Turma:** 1TDSPK
+- **GitHub:** [pedrostack-01](https://github.com/pedrostack-01)
+- **LinkedIn:** [Pedro Souza](https://www.linkedin.com/in/pedro-souza-6282333b3/)
 
-│   ├── 📁 components/
+### 4. Rafaela Donadio Figueiredo Tavares
+- **RM:** 572797
+- **Turma:** 1TDSPK
+- **GitHub:** [mrafahdft](https://github.com/mrafahdft)
+- **LinkedIn:** [Rafaela Donadio](https://www.linkedin.com/in/rafaela-donadio-bb3740369/)
 
-│   │   ├📄 AccountMenu.tsx → Menu da conta do usuário
+### 5. Victor Ferreira Gomes
+- **RM:** 569273
+- **Turma:** 1TDSPK
+- **GitHub:** [Victor180422](https://github.com/Victor180422)
+- **LinkedIn:** [Victor Ferreira Gomes](https://www.linkedin.com/in/victor-ferreira-gomes-63b2463b5/)
 
-│   │   ├📄 BottomNav.tsx → Barra de navegação inferior para dispositivos móveis
+---
 
-│   │   ├📄 CategoryChart.tsx → Gráfico de ações sustentáveis por categoria
+## 🖼️ Imagens e representação do projeto
 
-│   │   ├📄 ChallengeCard.tsx → Card de desafios sustentáveis
+### Dashboard principal e acesso ao EcoRank
 
-│   │   ├📄 EcoRankHeader.tsx → Cabeçalho das páginas do EcoRank
+A imagem abaixo mostra onde o usuário pode acessar o EcoRank e visualizar informações sobre suas ações sustentáveis e sua colocação no ranking. Além disso, o usuário pode registrar suas ações sustentáveis acessando a opção correspondente na página.
 
-│   │   ├📄 Header.tsx → Cabeçalho principal da plataforma
+![alt text]\(image.png)
 
-│   │   ├📄 Icons.tsx → Componentes e ícones utilizados na aplicação
+### Sistema de login e cadastro
 
-│   │   ├📄 ImpactChart.tsx → Gráfico de evolução do impacto e pontuação
+A imagem abaixo demonstra o sistema de autenticação do site, no qual o usuário pode criar uma conta, realizar login ou acessar uma conta disponibilizada para testes.
 
-│   │   ├📄 Layout.tsx → Estrutura principal de layout da aplicação
+![alt text]\(image-1.png)
 
-│   │   ├📄 LevelCard.tsx → Card de nível/ranque do usuário
+### Personalização de temas
 
-│   │   ├📄 QuickActions.tsx → Cards de ações rápidas
+Após realizar o login, o usuário também pode escolher o tema visual do site de acordo com sua preferência: claro, intermediário ou escuro.
 
-│   │   ├📄 RankingCard.tsx → Card de ranking dos usuários
+![alt text]\(image-2.png) ![alt text]\(image-3.png) ![alt text]\(image-4.png)
 
-│   │   ├📄 Sidebar.tsx → Menu lateral de navegação
+### Desafios sustentáveis
 
-│   │   └📄 StatCard.tsx → Cards de indicadores e estatísticas
+Também adicionamos desafios previamente definidos em nossa solução, além da possibilidade de criação de desafios privados pelos usuários. Essa funcionalidade foi uma das recomendações recebidas durante a mentoria da SoulUp.
 
-│   │
+![alt text]\(image-5.png) ![alt text]\(image-6.png)
 
-│   ├── 📁 context/
+### Conteúdos e notícias ambientais
 
-│   │   ├📄 AuthContext.tsx → Gerenciamento de autenticação e dados dos usuários
+Neste projeto, também desenvolvemos uma aba de conteúdos e notícias relacionadas ao meio ambiente, com o objetivo de inspirar os usuários a praticarem ações sustentáveis.
 
-│   │   └📄 ThemeContext.tsx → Gerenciamento dos temas da aplicação
+![alt text]\(image-7.png)
 
-│   │
+### Barra de pesquisa
 
-│   ├── 📁 data/
+Além das funcionalidades anteriores, o site também conta com uma barra de busca e pesquisa para facilitar a localização de conteúdos e informações pelos usuários.
 
-│   │   └📄 mock.ts → Dados utilizados para demonstração do protótipo
+![alt text]\(image-8.png)
 
-│   │
+### Responsividade
 
-│   └── 📁 pages/
+Utilizando recursos de responsividade, também desenvolvemos uma interface adaptada para dispositivos móveis, com uma experiência visual semelhante à de um aplicativo.
 
-│       ├📄 Cadastro.tsx → Página de cadastro de usuários
+![alt text]\(image-9.png)
 
-│       ├📄 Challenges.tsx → Página de desafios sustentáveis
+---
 
-│       ├📄 Configuracoes.tsx → Página de configurações
+## 🔗 Como usar
 
-│       ├📄 Contato.tsx → Página de contato
+O projeto está disponível publicamente por meio do GitHub e do Vercel.
 
-│       ├📄 Conteudos.tsx → Página de conteúdos e artigos
+**Repositório do GitHub:**
 
-│       ├📄 EcoRankDashboard.tsx → Dashboard principal do EcoRank
+[https://github.com/Pedrin740/Challenge---FIAP---2-Semestre.git](https://github.com/Pedrin740/Challenge---FIAP---2-Semestre.git)
 
-│       ├📄 FAQ.tsx → Página de perguntas frequentes
+**Site hospedado no Vercel:**
 
-│       ├📄 Home.tsx → Página inicial da plataforma
+[https://challenge-fiap-2-semestre.vercel.app](https://challenge-fiap-2-semestre.vercel.app)
 
-│       ├📄 Impact.tsx → Página de acompanhamento do impacto sustentável
+**Vídeo de apresentação do projeto no YouTube:**
 
-│       ├📄 Integrantes.tsx → Página com os integrantes da equipe
+Link do YouTube: 
 
-│       ├📄 Login.tsx → Página de login
+---
 
-│       ├📄 MeusObjetivos.tsx → Página de objetivos sustentáveis do usuário
+## ✉️ Contato
 
-│       ├📄 Perfil.tsx → Página de perfil do usuário
+Para dúvidas ou informações sobre o projeto, entre em contato com os integrantes por meio dos e-mails institucionais:
 
-│       ├📄 Ranking.tsx → Página de ranking dos usuários
-
-│       ├📄 Sobre.tsx → Página com informações sobre o projeto
-
-│       └📄 SubmitAction.tsx → Página para envio e registro de ações sustentáveis
-
-└📄 README.md → Documentação do projeto
-
-## Autores e créditos 👥
-    1 - Guilherme Joel de Camargo - RM570403 - 1TDSPK
-    Github: https://github.com/guilhermejcam
-    Linkedln: https://www.linkedin.com/in/guilherme-camargo-a06410410/
-
-    2 - Pedro Felipe de Castro Rosa - RM569049 - 1TDSPK
-    Github: https://github.com/Pedrin740
-    Linkedln: https://www.linkedin.com/in/pedro-felipe-castro-rosa/
-
-    3 - Pedro Henrique Cardoso Cavalcante De Souza - RM570464 - 1TDSPK
-    Github: https://github.com/pedrostack-01
-    Linkedln: https://www.linkedin.com/in/pedro-souza-6282333b3/
-
-    4 - Rafaela Donadio Figueiredo Tavares - RM572797 - 1TDSPK
-    Github: https://github.com/mrafahdft
-    Linkedln: https://www.linkedin.com/in/rafaela-donadio-bb3740369/
-
-    5 - Victor Ferreira Gomes - RM569273 - 1TDSPK
-    Github: https://github.com/Victor180422
-    Linkedln: https://www.linkedin.com/in/victor-ferreira-gomes-63b2463b5/
-
-## Imagens e representação do projeto
-
-A imagem abaixo, mostra onde o usuário pode acessar o EcoRank e tudo que ele pode ter de informações sobre suas ações sustenáveis, colocação no ranking. Além disso, o usuário pode fazer o envio do registro de sua ação sustentável, descendo no site e selecionando a opção.
-![alt text](image.png)
-
-
-A imagem abaixo, mostra que o site possui um sistema de login (Atualmente, é apenas uma demonstração e não contém back-end) em que ele pode criar uma conta, logar nela ou logar em uma conta que deixamos para teste!
-![alt text](image-1.png)
-
-Após fazer login, o usuário também pode optar por escolher o tema do site (Claro, intermediário ou escuro) de acordo com sua preferência!
-![alt text](image-2.png) ![alt text](image-3.png) ![alt text](image-4.png)
-
-Também adicionamos alguns desafios já pré-defenidos em nossa solução e desafios privados do usuário (Recomendação que recebemos durante a mentoria da SoulUp)
-![alt text](image-5.png) ![alt text](image-6.png)
-
-Nesse projeto, resolvemos criar uma aba de conteúdos/notícias do meio-ambiente que possam inspirar os usuários a praticarem alguma ação sustentável
-![alt text](image-7.png)
-
-Além de tudo isso, agora nosso site também conta com uma barra de busca/pesquisa para o usuário localizar o que deseja com mais facilidade!
-![alt text](image-8.png)
-
-Utilizando a responsividade, também desenvolvemos uma interface diferenciada (Estilo aplicativo em nosso projeto)
-![alt text](image-9.png)
-
-## Link do Repositório 🔗
-https://github.com/Pedrin740/Challenge---FIAP---2-Semestre.git
-
-## Contato ✉️
-E-mail dos integrantes:
-    1 - RM570403@fiap.com.br - Guilherme Joel de Camargo
-    2 - RM569049@fiap.com.br - Pedro Felipe de Castro Rosa
-    3 - RM570464@fiap.com.br - Pedro Henrique Cardoso Cavalcante De Souza
-    4 - RM572797@fiap.com.br - Rafaela Donadio Figueiredo Tavares
-    5 - RM569273@fiap.com.br - Victor Ferreira Gomes
+1. **Guilherme Joel de Camargo:** RM570403@fiap.com.br
+2. **Pedro Felipe de Castro Rosa:** RM569049@fiap.com.br
+3. **Pedro Henrique Cardoso Cavalcante De Souza:** RM570464@fiap.com.br
+4. **Rafaela Donadio Figueiredo Tavares:** RM572797@fiap.com.br
+5. **Victor Ferreira Gomes:** RM569273@fiap.com.br
