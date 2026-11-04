@@ -1,202 +1,131 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { buscarImpacto, type ImpactoApi } from "../services/ecoRankApi";
+
+type PontoGrafico = {
+  label: string;
+  value: number;
+};
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString(
-    "pt-BR",
-    {
-      day: "2-digit",
-      month: "2-digit",
-    },
-  );
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+  });
 }
 
 export function ImpactChart() {
   const { user } = useAuth();
+  const [impacto, setImpacto] = useState<ImpactoApi | null>(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarImpacto() {
+      const token = localStorage.getItem("ecorank_token");
+
+      if (!token) {
+        if (ativo) {
+          setErro("Faça login para visualizar sua evolução.");
+          setCarregando(false);
+        }
+        return;
+      }
+
+      try {
+        setCarregando(true);
+        setErro("");
+
+        const dados = await buscarImpacto(token);
+
+        if (ativo) {
+          setImpacto(dados);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar evolução de pontos:", error);
+
+        if (ativo) {
+          setErro("Não foi possível carregar a evolução de pontos.");
+        }
+      } finally {
+        if (ativo) {
+          setCarregando(false);
+        }
+      }
+    }
+
+    void carregarImpacto();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   if (!user) {
     return null;
   }
 
-  const actionHistory =
-    user.actionHistory ?? [];
-
-  const now = new Date();
-
-  const thirtyDaysAgo =
-    new Date(
-      now.getTime() -
-        30 *
-          24 *
-          60 *
-          60 *
-          1000,
-    );
-
-  const totalHistoryPoints =
-    actionHistory.reduce(
-      (sum, action) =>
-        sum + action.points,
-      0,
-    );
-
-  const initialPoints = Math.max(
-    0,
-    user.ecoRank.points -
-      totalHistoryPoints,
+  const hoje = new Date();
+  const inicioPeriodo = new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate() - 29,
   );
 
-  const pointsBeforePeriod =
-    actionHistory
-      .filter(
-        (action) =>
-          new Date(action.date) <
-          thirtyDaysAgo,
-      )
-      .reduce(
-        (sum, action) =>
-          sum + action.points,
-        0,
-      );
+  const timeline: PontoGrafico[] = [];
 
-  let currentPoints =
-    initialPoints +
-    pointsBeforePeriod;
-
-  const recentActions =
-    actionHistory
-      .filter(
-        (action) =>
-          new Date(action.date) >=
-            thirtyDaysAgo &&
-          new Date(action.date) <= now,
-      )
-      .sort(
-        (a, b) =>
-          new Date(a.date).getTime() -
-          new Date(b.date).getTime(),
-      );
-
-  const groupedActions =
-    new Map<string, number>();
-
-  recentActions.forEach(
-    (action) => {
-      const actionDate =
-        new Date(action.date);
-
-      const key =
-        actionDate.toISOString()
-          .split("T")[0];
-
-      const currentValue =
-        groupedActions.get(key) ??
-        0;
-
-      groupedActions.set(
-        key,
-        currentValue +
-          action.points,
-      );
-    },
-  );
-
-  const timeline: {
-    label: string;
-    value: number;
-  }[] = [
-    {
-      label: formatDate(
-        thirtyDaysAgo,
-      ),
-      value: currentPoints,
-    },
-  ];
-
-  Array.from(
-    groupedActions.entries(),
-  )
-    .sort(
-      ([dateA], [dateB]) =>
-        dateA.localeCompare(
-          dateB,
-        ),
-    )
-    .forEach(
-      ([date, points]) => {
-        currentPoints += points;
-
-        timeline.push({
-          label: formatDate(
-            new Date(
-              `${date}T12:00:00`,
-            ),
-          ),
-          value: currentPoints,
-        });
-      },
-    );
-
-  if (timeline.length === 1) {
+  if (impacto) {
     timeline.push({
-      label: formatDate(now),
-      value: user.ecoRank.points,
+      label: formatDate(inicioPeriodo),
+      value: impacto.pontosIniciais,
     });
+
+    impacto.evolucao.forEach((item) => {
+      const data = new Date(`${item.data}T12:00:00`);
+
+      timeline.push({
+        label: formatDate(data),
+        value: item.acumulado,
+      });
+    });
+
+    if (impacto.evolucao.length === 0) {
+      timeline.push({
+        label: formatDate(hoje),
+        value: impacto.pontos,
+      });
+    }
   }
 
   const visibleTimeline =
     timeline.length > 7
-      ? [
-          timeline[0],
-          ...timeline.slice(-6),
-        ]
+      ? [timeline[0], ...timeline.slice(-6)]
       : timeline;
 
-  const values =
-    visibleTimeline.map(
-      (item) => item.value,
-    );
+  const values = visibleTimeline.map((item) => item.value);
 
-  const maxValue =
-    Math.max(
-      ...values,
-      100,
-    );
-
-  const minValue =
-    Math.min(
-      ...values,
-      0,
-    );
-
-  const range =
-    Math.max(
-      maxValue - minValue,
-      100,
-    );
-
+  const maxValue = Math.max(...values, 100);
+  const minValue = Math.min(...values, 0);
+  const range = Math.max(maxValue - minValue, 100);
   const chartHeight = 115;
+
+  const calcularX = (index: number) =>
+    visibleTimeline.length === 1
+      ? 180
+      : 20 + (index / (visibleTimeline.length - 1)) * 320;
+
+  const calcularY = (value: number) =>
+    145 - ((value - minValue) / range) * chartHeight;
 
   const points = visibleTimeline
     .map((item, index) => {
-      const x =
-        visibleTimeline.length === 1
-          ? 180
-          : 20 +
-            (index /
-              (visibleTimeline.length -
-                1)) *
-              320;
-
-      const y =
-        145 -
-        ((item.value -
-          minValue) /
-          range) *
-          chartHeight;
-
-      return `${x},${y}`;
+      return `${calcularX(index)},${calcularY(item.value)}`;
     })
     .join(" ");
+
+  const semAcoes = impacto?.totalAcoes === 0;
 
   return (
     <section className="rounded-2xl border border-white/10 bg-[#121214] p-5">
@@ -210,11 +139,23 @@ export function ImpactChart() {
         </span>
       </div>
 
-      {actionHistory.length === 0 ? (
+      {carregando ? (
+        <div className="mt-4 flex h-[180px] items-center justify-center">
+          <p className="text-sm text-zinc-500">
+            Carregando evolução...
+          </p>
+        </div>
+      ) : erro ? (
+        <div className="mt-4 flex h-[180px] items-center justify-center text-center">
+          <p className="text-sm text-red-400">
+            {erro}
+          </p>
+        </div>
+      ) : semAcoes ? (
         <div className="mt-4 flex h-[180px] items-center justify-center text-center">
           <div>
             <p className="text-sm text-zinc-400">
-              Ainda não há ações registradas no gráfico.
+              Ainda não há ações aprovadas no gráfico.
             </p>
 
             <p className="mt-1 text-xs text-zinc-600">
@@ -261,36 +202,15 @@ export function ImpactChart() {
               strokeLinejoin="round"
             />
 
-            {visibleTimeline.map(
-              (item, index) => {
-                const x =
-                  visibleTimeline.length ===
-                  1
-                    ? 180
-                    : 20 +
-                      (index /
-                        (visibleTimeline.length -
-                          1)) *
-                        320;
-
-                const y =
-                  145 -
-                  ((item.value -
-                    minValue) /
-                    range) *
-                    chartHeight;
-
-                return (
-                  <circle
-                    key={`${item.label}-${index}`}
-                    cx={x}
-                    cy={y}
-                    r="4"
-                    fill="#a3e635"
-                  />
-                );
-              },
-            )}
+            {visibleTimeline.map((item, index) => (
+              <circle
+                key={`${item.label}-${index}`}
+                cx={calcularX(index)}
+                cy={calcularY(item.value)}
+                r="4"
+                fill="#a3e635"
+              />
+            ))}
           </svg>
 
           <div
@@ -299,24 +219,28 @@ export function ImpactChart() {
               gridTemplateColumns: `repeat(${visibleTimeline.length}, minmax(0, 1fr))`,
             }}
           >
-            {visibleTimeline.map(
-              (item, index) => (
-                <span
-                  key={`${item.label}-label-${index}`}
-                  className={
-                    index ===
-                    visibleTimeline.length - 1
-                      ? "text-right"
-                      : index === 0
-                        ? "text-left"
-                        : "text-center"
-                  }
-                >
-                  {item.label}
-                </span>
-              ),
-            )}
+            {visibleTimeline.map((item, index) => (
+              <span
+                key={`${item.label}-label-${index}`}
+                className={
+                  index === visibleTimeline.length - 1
+                    ? "text-right"
+                    : index === 0
+                      ? "text-left"
+                      : "text-center"
+                }
+              >
+                {item.label}
+              </span>
+            ))}
           </div>
+
+          <p className="mt-2 text-xs text-zinc-500">
+            Total de pontos:{" "}
+            <strong className="text-lime-400">
+              {impacto?.pontos.toLocaleString("pt-BR")}
+            </strong>
+          </p>
         </>
       )}
     </section>
